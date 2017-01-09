@@ -15,48 +15,97 @@
  */
 package edu.amherst.acdc.trellis.service.datastream;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static org.slf4j.LoggerFactory.getLogger;
+import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
+import static org.apache.commons.codec.digest.DigestUtils.sha1Hex;
+import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
+import static org.apache.commons.codec.digest.DigestUtils.sha384Hex;
+import static org.apache.commons.codec.digest.DigestUtils.sha512Hex;
+
 import java.io.InputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.rdf.api.IRI;
 import edu.amherst.acdc.trellis.spi.DatastreamService;
 import edu.amherst.acdc.trellis.api.Datastream;
+import org.slf4j.Logger;
 
 /**
  * @author acoburn
  */
 public class DefaultDatastreamService implements DatastreamService {
 
+    private static final Logger LOGGER = getLogger(DefaultDatastreamService.class);
+
+    final private Map<String, DatastreamService.Resolver> resolvers = new HashMap<>();
 
     /**
      * Create a datastream service
+     * @param handlers the datastream resolvers
      */
-    public DefaultDatastreamService() {
-
+    public DefaultDatastreamService(final List<DatastreamService.Resolver> handlers) {
+        handlers.forEach(handler -> {
+            handler.getUriSchemes().forEach(scheme -> {
+                resolvers.put(scheme, handler);
+            });
+        });
     }
 
     @Override
-    public InputStream getContent(final IRI identifier) {
-        return null;
+    public Optional<InputStream> getContent(final IRI identifier) {
+        return getResolver(identifier).flatMap(resolver -> resolver.getContent(identifier));
     }
 
     @Override
     public Boolean exists(final IRI identifier) {
-        return false;
+        return getResolver(identifier).map(resolver -> resolver.exists(identifier)).orElse(false);
     }
+
 
     @Override
     public void setContent(final IRI identifier, final InputStream stream, final String contentType) {
-
+        getResolver(identifier).ifPresent(resolver -> resolver.setContent(identifier, stream, contentType));
     }
 
     @Override
-    public Optional<String> calculateDigest(final String algorithm) {
-        return Optional.empty();
+    public Optional<String> calculateDigest(final IRI identifier, final String algorithm) {
+        return getContent(identifier).flatMap(stream -> hexDigest(algorithm, stream));
     }
 
     @Override
     public IRI generateIdentifier(final IRI identifier, final Datastream.StoragePartition partition) {
         return null;
+    }
+
+    private Optional<DatastreamService.Resolver> getResolver(final IRI identifier) {
+        return of(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getScheme).map(resolvers::get)
+            .filter(Objects::nonNull);
+    }
+
+    private static Optional<String> hexDigest(final String algorithm, final InputStream stream) {
+        try {
+            if (algorithm.equals("MD5")) {
+                return of(md5Hex(stream));
+            } else if (algorithm.equals("SHA-1")) {
+                return of(sha1Hex(stream));
+            } else if (algorithm.equals("SHA-256")) {
+                return of(sha256Hex(stream));
+            } else if (algorithm.equals("SHA-384")) {
+                return of(sha384Hex(stream));
+            } else if (algorithm.equals("SHA-512")) {
+                return of(sha512Hex(stream));
+            }
+        } catch (final IOException ex) {
+            LOGGER.error("Error computing digest: {}", ex.getMessage());
+        }
+        return empty();
     }
 }
