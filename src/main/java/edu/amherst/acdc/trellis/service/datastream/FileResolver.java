@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -74,10 +75,8 @@ public class FileResolver implements DatastreamService.Resolver {
     }
 
     // TODO -- support incoming digest comparisons
-    // Note: the contentType value isn't used here; that may need to be changed to a more
-    // general metadata Map<String, String> structure
     @Override
-    public void setContent(final IRI identifier, final InputStream stream, final String contentType) {
+    public void setContent(final IRI identifier, final InputStream stream, final Map<String, String> metadata) {
         requireNonNull(stream, "InputStream may not be null!");
         getFileFromIdentifier(identifier).map(File::toPath).ifPresent(path -> {
             try {

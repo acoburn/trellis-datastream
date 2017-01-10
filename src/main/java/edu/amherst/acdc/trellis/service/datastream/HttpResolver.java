@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import edu.amherst.acdc.trellis.spi.DatastreamService;
@@ -107,8 +108,7 @@ public class HttpResolver implements DatastreamService.Resolver {
     }
 
     @Override
-    public void setContent(final IRI identifier, final InputStream stream, final String
-            contentType) {
+    public void setContent(final IRI identifier, final InputStream stream, final Map<String, String> metadata) {
         throw new UnsupportedOperationException("Cannot set content of external HTTP-based resources");
     }
 }
