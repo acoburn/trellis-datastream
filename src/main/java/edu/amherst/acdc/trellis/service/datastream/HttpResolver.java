@@ -19,6 +19,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.InputStream;
@@ -87,7 +88,7 @@ public class HttpResolver implements DatastreamService.Resolver {
         requireNonNull(identifier, "Identifier may not be null!");
         try (final CloseableHttpResponse res = httpClient.execute(new HttpHead(identifier.getIRIString()))) {
             return ofNullable(res).map(HttpResponse::getStatusLine).map(StatusLine::getStatusCode)
-                    .filter(code -> code < 400).isPresent();
+                    .filter(code -> code < SC_BAD_REQUEST).isPresent();
         } catch (final IOException ex) {
             LOGGER.error("Error while checking for " + identifier.getIRIString() + ": " + ex.getMessage());
         }
