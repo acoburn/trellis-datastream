@@ -30,6 +30,7 @@ ext {
     trellisSpiVersion = '0.1.0-SNAPSHOT'
     commonsRdfVersion = '0.3.0-incubating'
     commonsCodecVersion = '1.10'
+    httpClientVersion = '4.5.2'
     slf4jVersion = '1.7.21'
 
     /* Testing */
@@ -48,6 +49,7 @@ dependencies {
     compile group: 'edu.amherst.acdc', name: 'trellis-spi', version: trellisSpiVersion
     compile group: 'org.slf4j', name: 'slf4j-api', version: slf4jVersion
     compile group: 'commons-codec', name: 'commons-codec', version: commonsCodecVersion
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: httpClientVersion
 
     testCompile group: 'junit', name: 'junit', version: junitVersion
     testCompile group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
