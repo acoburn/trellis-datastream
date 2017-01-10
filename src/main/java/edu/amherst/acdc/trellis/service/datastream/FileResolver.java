@@ -18,7 +18,7 @@ package edu.amherst.acdc.trellis.service.datastream;
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Collections.singletonList;
-import static java.util.Objects.assertNonNull;
+import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 import java.io.File;
@@ -47,7 +47,7 @@ public class FileResolver implements DatastreamService.Resolver {
      * @param directory the base directory in which to store and retrieve files
      */
     public FileResolver(final String directory) {
-        assertNonNull(directory, "Directory may not be null!");
+        requireNonNull(directory, "Directory may not be null!");
         this.directory = new File(directory);
     }
 
@@ -74,10 +74,11 @@ public class FileResolver implements DatastreamService.Resolver {
     }
 
     // TODO -- support incoming digest comparisons
-    // Note -- the contentType value isn't used here -- that may be changed to a more general metadata Map<String, String>
+    // Note: the contentType value isn't used here; that may need to be changed to a more
+    // general metadata Map<String, String> structure
     @Override
     public void setContent(final IRI identifier, final InputStream stream, final String contentType) {
-        assertNonNull(stream, "InputStream may not be null!");
+        requireNonNull(stream, "InputStream may not be null!");
         getFileFromIdentifier(identifier).map(File::toPath).ifPresent(path -> {
             try {
                 copy(stream, path, REPLACE_EXISTING);
