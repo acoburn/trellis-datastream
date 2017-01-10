@@ -20,6 +20,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,6 +36,7 @@ import java.util.Optional;
 import edu.amherst.acdc.trellis.api.RuntimeRepositoryException;
 import edu.amherst.acdc.trellis.spi.DatastreamService;
 import org.apache.commons.rdf.api.IRI;
+import org.slf4j.Logger;
 
 /**
  * @author acoburn
@@ -42,6 +44,8 @@ import org.apache.commons.rdf.api.IRI;
 public class FileResolver implements DatastreamService.Resolver {
 
     private final File directory;
+
+    private static final Logger LOGGER = getLogger(FileResolver.class);
 
     /**
      * Create a new file resolver
@@ -89,7 +93,10 @@ public class FileResolver implements DatastreamService.Resolver {
     }
 
     private Optional<File> getFileFromIdentifier(final IRI identifier) {
-        return ofNullable(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getPath)
-                .filter(Objects::nonNull).map(File::new);
+        return ofNullable(identifier).map(IRI::getIRIString).map(URI::create)
+                .map(URI::getSchemeSpecificPart)
+                .filter(Objects::nonNull).map(path -> {
+                    return new File(directory, path);
+                });
     }
 }

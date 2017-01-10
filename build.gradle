@@ -36,6 +36,7 @@ ext {
     /* Testing */
     junitVersion = '4.12'
     logbackVersion = '1.1.7'
+    commonsIoVersion = '2.5'
 
     /* OSGi */
     projectOsgiVersion = project.version.replaceAll("-SNAPSHOT", ".SNAPSHOT")
@@ -53,6 +54,8 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: junitVersion
     testCompile group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
+    testCompile group: 'org.apache.commons', name: 'commons-rdf-simple', version: commonsRdfVersion
+    testCompile group: 'commons-io', name: 'commons-io', version: commonsIoVersion
 
     buildToolsConfig 'edu.amherst.acdc:acrepo-build-tools:0.2.0'
 }
