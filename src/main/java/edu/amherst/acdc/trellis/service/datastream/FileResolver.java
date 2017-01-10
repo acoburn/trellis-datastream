@@ -18,7 +18,8 @@ package edu.amherst.acdc.trellis.service.datastream;
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Collections.singletonList;
-import static java.util.Optional.of;
+import static java.util.Objects.assertNonNull;
+import static java.util.Optional.ofNullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,8 +36,6 @@ import edu.amherst.acdc.trellis.spi.DatastreamService;
 import org.apache.commons.rdf.api.IRI;
 
 /**
- * TODO -- we may want to do more with DigestInputStream and DigestOutputStream for the sake of efficiency
- *
  * @author acoburn
  */
 public class FileResolver implements DatastreamService.Resolver {
@@ -48,6 +47,7 @@ public class FileResolver implements DatastreamService.Resolver {
      * @param directory the base directory in which to store and retrieve files
      */
     public FileResolver(final String directory) {
+        assertNonNull(directory, "Directory may not be null!");
         this.directory = new File(directory);
     }
 
@@ -73,10 +73,11 @@ public class FileResolver implements DatastreamService.Resolver {
         return getFileFromIdentifier(identifier).filter(File::isFile).isPresent();
     }
 
-    // the contentType value doesn't seem to be needed (it may be needed for other resolvers, though
-    //   -- perhaps we should add the digest value and then compare that with the inputstream?
+    // TODO -- support incoming digest comparisons
+    // Note -- the contentType value isn't used here -- that may be changed to a more general metadata Map<String, String>
     @Override
     public void setContent(final IRI identifier, final InputStream stream, final String contentType) {
+        assertNonNull(stream, "InputStream may not be null!");
         getFileFromIdentifier(identifier).map(File::toPath).ifPresent(path -> {
             try {
                 copy(stream, path, REPLACE_EXISTING);
@@ -88,7 +89,7 @@ public class FileResolver implements DatastreamService.Resolver {
     }
 
     private Optional<File> getFileFromIdentifier(final IRI identifier) {
-        return of(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getPath)
+        return ofNullable(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getPath)
                 .filter(Objects::nonNull).map(File::new);
     }
 }
