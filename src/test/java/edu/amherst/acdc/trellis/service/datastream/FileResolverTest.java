@@ -16,7 +16,6 @@
 package edu.amherst.acdc.trellis.service.datastream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -69,7 +68,7 @@ public class FileResolverTest {
         final FileResolver resolver = new FileResolver(res.getParent());
         final IRI fileIRI = rdf.createIRI("file:" + randomFilename());
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
-        resolver.setContent(fileIRI, inputStream, emptyMap());
+        resolver.setContent(fileIRI, inputStream);
         assertTrue(resolver.getContent(fileIRI).isPresent());
         assertEquals(contents, resolver.getContent(fileIRI).map(this::uncheckedToString).get());
     }
