@@ -85,7 +85,7 @@ public class DefaultDatastreamService implements DatastreamService {
             } else if (algorithm.toUpperCase().equals("SHA-512")) {
                 return of(sha512Hex(stream));
             }
-            LOGGER.warning("Unsupported digest: {}", algorithm);
+            LOGGER.warn("Unsupported digest: {}", algorithm);
         } catch (final IOException ex) {
             LOGGER.error("Error computing digest: {}", ex.getMessage());
         }
