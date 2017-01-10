@@ -35,6 +35,8 @@ import edu.amherst.acdc.trellis.spi.DatastreamService;
 import org.apache.commons.rdf.api.IRI;
 
 /**
+ * TODO -- we may want to do more with DigestInputStream and DigestOutputStream for the sake of efficiency
+ *
  * @author acoburn
  */
 public class FileResolver implements DatastreamService.Resolver {
@@ -71,6 +73,8 @@ public class FileResolver implements DatastreamService.Resolver {
         return getFileFromIdentifier(identifier).filter(File::isFile).isPresent();
     }
 
+    // the contentType value doesn't seem to be needed (it may be needed for other resolvers, though
+    //   -- perhaps we should add the digest value and then compare that with the inputstream?
     @Override
     public void setContent(final IRI identifier, final InputStream stream, final String contentType) {
         getFileFromIdentifier(identifier).map(File::toPath).ifPresent(path -> {
