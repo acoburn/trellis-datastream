@@ -32,11 +32,9 @@ import java.util.Optional;
 import edu.amherst.acdc.trellis.spi.DatastreamService;
 import org.apache.commons.rdf.api.IRI;
 import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
@@ -48,7 +46,7 @@ public class HttpResolver implements DatastreamService.Resolver {
 
     private static final Logger LOGGER = getLogger(HttpResolver.class);
 
-    private static CloseableHttpClient httpClient = createPoolingHttpClient();
+    private static HttpClient httpClient = createPoolingHttpClient();
 
     /**
      * Create a pooling HTTP client
@@ -57,7 +55,7 @@ public class HttpResolver implements DatastreamService.Resolver {
      * <p>Note: The maximum connection count is 5 but can be overridden with a system property "http.maxConnections".
      * </p>
      */
-    public static CloseableHttpClient createPoolingHttpClient() {
+    public static HttpClient createPoolingHttpClient() {
         final int max = Integer.parseInt(System.getProperty("http.maxConnections", "5"));
         return HttpClientBuilder.create()
                 .setRedirectStrategy(new LaxRedirectStrategy())
@@ -71,7 +69,7 @@ public class HttpResolver implements DatastreamService.Resolver {
      * Set the default HTTP client for this resolver
      * @param client the http client
      */
-    public static void setDefaultHttpClient(final CloseableHttpClient client) {
+    public static void setDefaultHttpClient(final HttpClient client) {
         requireNonNull(client, "HTTP client may not be null!");
         httpClient = client;
     }
@@ -87,9 +85,9 @@ public class HttpResolver implements DatastreamService.Resolver {
     @Override
     public Boolean exists(final IRI identifier) {
         requireNonNull(identifier, "Identifier may not be null!");
-        try (final CloseableHttpResponse res = httpClient.execute(new HttpHead(identifier.getIRIString()))) {
-            return ofNullable(res).map(HttpResponse::getStatusLine).map(StatusLine::getStatusCode)
-                    .filter(code -> code < SC_BAD_REQUEST).isPresent();
+        try {
+            final HttpResponse res = httpClient.execute(new HttpHead(identifier.getIRIString()));
+            return res.getStatusLine().getStatusCode() < SC_BAD_REQUEST;
         } catch (final IOException ex) {
             LOGGER.error("Error while checking for " + identifier.getIRIString() + ": " + ex.getMessage());
         }
