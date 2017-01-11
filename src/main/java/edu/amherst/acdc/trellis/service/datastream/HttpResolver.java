@@ -99,7 +99,8 @@ public class HttpResolver implements DatastreamService.Resolver {
     @Override
     public Optional<InputStream> getContent(final IRI identifier) {
         requireNonNull(identifier,  "Identifier may not be null!");
-        try (final CloseableHttpResponse res = httpClient.execute(new HttpGet(identifier.getIRIString()))) {
+        try {
+            final HttpResponse res = httpClient.execute(new HttpGet(identifier.getIRIString()));
             return ofNullable(res.getEntity().getContent());
         } catch (final IOException ex) {
             LOGGER.error("Error while fetching the content for " + identifier.getIRIString() + ": " + ex.getMessage());
