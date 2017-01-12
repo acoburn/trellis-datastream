@@ -39,6 +39,7 @@ ext {
     commonsIoVersion = '2.5'
 
     /* OSGi */
+    spiflyVersion = '1.0.8'
     projectOsgiVersion = project.version.replaceAll("-SNAPSHOT", ".SNAPSHOT")
 }
 
@@ -90,8 +91,8 @@ jar {
         instruction 'Import-Package', '*'
         instruction 'Export-Package', "edu.amherst.acdc.trellis.service.id;version=${projectOsgiVersion}"
         instruction 'Require-Capability', '''
-            osgi.serviceloader; filter:="(osgi.serviceloader=org.apache.commons.rdf.api.RDF)";cardinality:=at_least_one,
-            osgi.extender; filter:="(osgi.extender=osgi.serviceloader.registrar)"'''
+            osgi.extender; filter:="(&(osgi.extender=osgi.serviceloader.registrar)(osgi.extender=osgi.serviceloader.processor))",
+            osgi.serviceloader; filter:="(osgi.serviceloader=org.apache.commons.rdf.api.RDF)";cardinality:=at_least_one'''
         instruction 'Provide-Capability', 'osgi.serviceloader; osgi.serviceloader=edu.amherst.acdc.trellis.spi.DatastreamService'
     }
 }
