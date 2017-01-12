@@ -61,7 +61,7 @@ public class DefaultDatastreamService implements DatastreamService {
 
     @Override
     public IRI generateIdentifier(final IRI identifier, final Datastream.StoragePartition partition) {
-        // TODO
+        // TODO -- what am I doing with this? Does it even belong here?
         return null;
     }
 
