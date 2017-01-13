@@ -28,11 +28,9 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import javax.inject.Inject;
 
 import org.apache.commons.rdf.api.IRI;
 import edu.amherst.acdc.trellis.spi.DatastreamService;
@@ -48,16 +46,17 @@ public class DefaultDatastreamService implements DatastreamService {
 
     final private Map<String, DatastreamService.Resolver> resolvers = new HashMap<>();
 
-    /**
-     * Create a datastream service
-     * @param handlers the datastream resolvers
-     */
-    @Inject
-    public DefaultDatastreamService(final List<DatastreamService.Resolver> handlers) {
-        handlers.forEach(handler -> {
-            handler.getUriSchemes().forEach(scheme -> {
-                resolvers.put(scheme, handler);
-            });
+    @Override
+    public synchronized void addResolver(final DatastreamService.Resolver resolver) {
+        resolver.getUriSchemes().forEach(scheme -> {
+            resolvers.put(scheme, resolver);
+        });
+    }
+
+    @Override
+    public synchronized void removeResolver(final DatastreamService.Resolver resolver) {
+        resolver.getUriSchemes().forEach(scheme -> {
+            resolvers.remove(scheme, resolver);
         });
     }
 
