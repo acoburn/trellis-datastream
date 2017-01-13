@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import javax.inject.Inject;
 
 import org.apache.commons.rdf.api.IRI;
 import edu.amherst.acdc.trellis.spi.DatastreamService;
@@ -51,6 +52,7 @@ public class DefaultDatastreamService implements DatastreamService {
      * Create a datastream service
      * @param handlers the datastream resolvers
      */
+    @Inject
     public DefaultDatastreamService(final List<DatastreamService.Resolver> handlers) {
         handlers.forEach(handler -> {
             handler.getUriSchemes().forEach(scheme -> {
