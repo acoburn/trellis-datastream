@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,6 +46,16 @@ public class DefaultDatastreamService implements DatastreamService {
     private static final Logger LOGGER = getLogger(DefaultDatastreamService.class);
 
     final private Map<String, DatastreamService.Resolver> resolvers = new HashMap<>();
+
+    @Override
+    public void setResolvers(final List<DatastreamService.Resolver> resolvers) {
+        this.resolvers.clear();
+        resolvers.forEach(resolver -> {
+            resolver.getUriSchemes().forEach(scheme -> {
+                this.resolvers.put(scheme, resolver);
+            });
+        });
+    }
 
     @Override
     public synchronized void addResolver(final DatastreamService.Resolver resolver) {
