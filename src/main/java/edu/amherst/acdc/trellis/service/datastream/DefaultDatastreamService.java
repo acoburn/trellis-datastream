@@ -17,23 +17,23 @@ package edu.amherst.acdc.trellis.service.datastream;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.codec.binary.Hex.encodeHexString;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
-import static org.apache.commons.codec.digest.DigestUtils.sha1Hex;
-import static org.apache.commons.codec.digest.DigestUtils.sha256Hex;
-import static org.apache.commons.codec.digest.DigestUtils.sha384Hex;
-import static org.apache.commons.codec.digest.DigestUtils.sha512Hex;
 
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.rdf.api.IRI;
+import org.apache.commons.codec.digest.DigestUtils;
 import edu.amherst.acdc.trellis.spi.DatastreamService;
 import edu.amherst.acdc.trellis.api.Datastream;
 import org.slf4j.Logger;
@@ -85,22 +85,17 @@ public class DefaultDatastreamService implements DatastreamService {
 
     @Override
     public Optional<String> hexDigest(final String algorithm, final InputStream stream) {
-        try {
-            if (algorithm.toUpperCase().equals("MD5")) {
-                return of(md5Hex(stream));
-            } else if (algorithm.toUpperCase().equals("SHA-1")) {
-                return of(sha1Hex(stream));
-            } else if (algorithm.toUpperCase().equals("SHA-256")) {
-                return of(sha256Hex(stream));
-            } else if (algorithm.toUpperCase().equals("SHA-384")) {
-                return of(sha384Hex(stream));
-            } else if (algorithm.toUpperCase().equals("SHA-512")) {
-                return of(sha512Hex(stream));
+        return ofNullable(algorithm).map(DigestUtils::getDigest).flatMap(digest(stream));
+    }
+
+    private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
+        return algorithm -> {
+            try {
+                return of(encodeHexString(DigestUtils.updateDigest(algorithm, stream).digest()));
+            } catch (final IOException ex) {
+                LOGGER.error("Error computing digest: {}", ex.getMessage());
             }
-            LOGGER.warn("Unsupported digest: {}", algorithm);
-        } catch (final IOException ex) {
-            LOGGER.error("Error computing digest: {}", ex.getMessage());
-        }
-        return empty();
+            return empty();
+        };
     }
 }
