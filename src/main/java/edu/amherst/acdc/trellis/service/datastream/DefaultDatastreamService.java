@@ -58,14 +58,14 @@ public class DefaultDatastreamService implements DatastreamService {
     }
 
     @Override
-    public synchronized void addResolver(final DatastreamService.Resolver resolver) {
+    public synchronized void bind(final DatastreamService.Resolver resolver) {
         resolver.getUriSchemes().forEach(scheme -> {
             resolvers.put(scheme, resolver);
         });
     }
 
     @Override
-    public synchronized void removeResolver(final DatastreamService.Resolver resolver) {
+    public synchronized void unbind(final DatastreamService.Resolver resolver) {
         resolver.getUriSchemes().forEach(scheme -> {
             resolvers.remove(scheme, resolver);
         });
