@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.amherst.acdc.trellis.service.datastream;
+package edu.amherst.acdc.trellis.datastream;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
