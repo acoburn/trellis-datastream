@@ -197,9 +197,9 @@ uploadArchives {
             }
 
             scm {
-                connection 'scm:git:git://github.com/acoburn/trellis-service-datastream.git'
-                developerConnection 'scm:git:git@github.com/acoburn/trellis-service-datastream.git'
-                url 'https://github.com/acoburn/trellis-service-datastream'
+                connection 'scm:git:git://github.com/acoburn/trellis-datastream.git'
+                developerConnection 'scm:git:git@github.com/acoburn/trellis-datastream.git'
+                url 'https://github.com/acoburn/trellis-datastream'
                 tag 'HEAD'
             }
 
@@ -234,7 +234,7 @@ checkstyle {
 sonarqube {
     properties {
         property "sonar.projectName", "Amherst College Trellis Repository Datastream Service"
-        property "sonar.projectKey", "edu.amherst.acdc:trellis-service-datastream"
+        property "sonar.projectKey", "edu.amherst.acdc:trellis-datastream"
     }
 }
 

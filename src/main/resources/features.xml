@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="trellis-service-datastream-${project.version}">
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="trellis-datastream-${project.version}">
 
   <repository>mvn:edu.amherst.acdc/trellis-spi/${trellisSpiVersion}/xml/features</repository>
 
-  <feature name="trellis-service-datastream" version="${project.version}">
+  <feature name="trellis-datastream" version="${project.version}">
     <details>Installs the Trellis Datastream service bundle</details>
 
     <feature>trellis-spi</feature>
@@ -13,6 +13,6 @@
     <bundle dependency="true">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
     <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient/${httpClientVersion}</bundle>
 
-    <bundle>mvn:edu.amherst.acdc/trellis-service-datastream/${project.version}</bundle>
+    <bundle>mvn:edu.amherst.acdc/trellis-datastream/${project.version}</bundle>
   </feature>
 </features>
