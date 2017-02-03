@@ -76,10 +76,10 @@ public class HttpResolver implements DatastreamService.Resolver {
 
     @Override
     public List<String> getUriSchemes() {
-        final List<String> schemes = new ArrayList<>();
-        schemes.add("http");
-        schemes.add("https");
-        return unmodifiableList(schemes);
+        return unmodifiableList(new ArrayList<String>() { {
+            add("http");
+            add("https");
+        }});
     }
 
     @Override
