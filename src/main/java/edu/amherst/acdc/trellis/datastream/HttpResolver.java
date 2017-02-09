@@ -17,13 +17,13 @@ package edu.amherst.acdc.trellis.datastream;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +90,8 @@ public class HttpResolver implements DatastreamService.Resolver {
             return res.getStatusLine().getStatusCode() < SC_BAD_REQUEST;
         } catch (final IOException ex) {
             LOGGER.error("Error while checking for " + identifier.getIRIString() + ": " + ex.getMessage());
+            throw new UncheckedIOException(ex);
         }
-        return false;
     }
 
     @Override
@@ -102,8 +102,8 @@ public class HttpResolver implements DatastreamService.Resolver {
             return ofNullable(res.getEntity().getContent());
         } catch (final IOException ex) {
             LOGGER.error("Error while fetching the content for " + identifier.getIRIString() + ": " + ex.getMessage());
+            throw new UncheckedIOException(ex);
         }
-        return empty();
     }
 
     @Override

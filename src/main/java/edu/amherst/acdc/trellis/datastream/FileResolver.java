@@ -27,13 +27,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import edu.amherst.acdc.trellis.api.RuntimeRepositoryException;
 import edu.amherst.acdc.trellis.spi.DatastreamService;
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
@@ -67,8 +67,7 @@ public class FileResolver implements DatastreamService.Resolver {
             try {
                 return new FileInputStream(file);
             } catch (final FileNotFoundException ex) {
-                throw new RuntimeRepositoryException("File not found for " + identifier.getIRIString() +
-                        ": " + ex.getMessage());
+                throw new UncheckedIOException(ex);
             }
         });
     }
@@ -86,8 +85,7 @@ public class FileResolver implements DatastreamService.Resolver {
             try {
                 copy(stream, path, REPLACE_EXISTING);
             } catch (final IOException ex) {
-                throw new RuntimeRepositoryException("IO Error writing to " + identifier.getIRIString() + ": " +
-                        ex.getMessage());
+                throw new UncheckedIOException(ex);
             }
         });
     }
