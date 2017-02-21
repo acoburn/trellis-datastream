@@ -21,8 +21,11 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.codec.binary.Hex.encodeHexString;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.InputStream;
+import edu.amherst.acdc.trellis.api.Datastream;
+import edu.amherst.acdc.trellis.spi.DatastreamService;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.util.HashMap;
@@ -32,10 +35,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.codec.digest.DigestUtils;
-import edu.amherst.acdc.trellis.spi.DatastreamService;
-import edu.amherst.acdc.trellis.api.Datastream;
+import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
 
 /**

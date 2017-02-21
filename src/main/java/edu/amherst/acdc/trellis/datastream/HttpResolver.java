@@ -21,15 +21,16 @@ import static java.util.Optional.ofNullable;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import java.io.InputStream;
+import edu.amherst.acdc.trellis.spi.DatastreamService;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import edu.amherst.acdc.trellis.spi.DatastreamService;
 import org.apache.commons.rdf.api.IRI;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

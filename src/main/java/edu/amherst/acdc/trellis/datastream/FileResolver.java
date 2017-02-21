@@ -22,11 +22,13 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
+import edu.amherst.acdc.trellis.spi.DatastreamService;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.List;
@@ -34,7 +36,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import edu.amherst.acdc.trellis.spi.DatastreamService;
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
 
@@ -82,19 +83,18 @@ public class FileResolver implements DatastreamService.Resolver {
     public void setContent(final IRI identifier, final InputStream stream, final Map<String, String> metadata) {
         requireNonNull(stream, "InputStream may not be null!");
         getFileFromIdentifier(identifier).map(File::toPath).ifPresent(path -> {
+            LOGGER.debug("Setting datastream content for {}", identifier.getIRIString());
             try {
                 copy(stream, path, REPLACE_EXISTING);
             } catch (final IOException ex) {
+                LOGGER.error("Error while setting content: {}", ex.getMessage());
                 throw new UncheckedIOException(ex);
             }
         });
     }
 
     private Optional<File> getFileFromIdentifier(final IRI identifier) {
-        return ofNullable(identifier).map(IRI::getIRIString).map(URI::create)
-                .map(URI::getSchemeSpecificPart)
-                .filter(Objects::nonNull).map(path -> {
-                    return new File(directory, path);
-                });
+        return ofNullable(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getSchemeSpecificPart)
+                .filter(Objects::nonNull).map(path -> new File(directory, path));
     }
 }
