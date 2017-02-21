@@ -16,6 +16,7 @@
 package edu.amherst.acdc.trellis.datastream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -67,7 +68,7 @@ public class HttpResolverTest {
     @Test
     public void testHttpSchemes() {
         final HttpResolver resolver = new HttpResolver();
-        assertTrue(resolver.getUriSchemes().size() == 2);
+        assertEquals(2L, resolver.getUriSchemes().size());
         assertTrue(resolver.getUriSchemes().contains("http"));
         assertTrue(resolver.getUriSchemes().contains("https"));
     }

@@ -77,7 +77,7 @@ public class FileResolverTest {
     public void testFileSchemes() {
         final File res = new File(FileResolver.class.getResource(testDoc).getPath());
         final FileResolver resolver = new FileResolver(res.getParent());
-        assertTrue(resolver.getUriSchemes().size() == 1);
+        assertEquals(1L, resolver.getUriSchemes().size());
         assertTrue(resolver.getUriSchemes().contains("file"));
     }
 
