@@ -89,6 +89,11 @@ public class DefaultDatastreamService implements DatastreamService {
         return ofNullable(algorithm).map(DigestUtils::getDigest).flatMap(digest(stream));
     }
 
+    @Override
+    public void close() {
+        // no-op
+    }
+
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
         return algorithm -> {
             try {
