@@ -91,7 +91,13 @@ public class DefaultDatastreamService implements DatastreamService {
 
     @Override
     public void close() {
-        // no-op
+        resolvers.values().forEach(resolver -> {
+            try {
+                resolver.close();
+            } catch (final Exception ex) {
+                LOGGER.error("Unable to close the resolver: {}", ex.getMessage());
+            }
+        });
     }
 
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {

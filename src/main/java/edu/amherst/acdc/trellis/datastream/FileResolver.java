@@ -93,6 +93,11 @@ public class FileResolver implements DatastreamService.Resolver {
         });
     }
 
+    @Override
+    public void close() {
+        // no-op
+    }
+
     private Optional<File> getFileFromIdentifier(final IRI identifier) {
         return ofNullable(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getSchemeSpecificPart)
                 .filter(Objects::nonNull).map(path -> new File(directory, path));
