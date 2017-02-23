@@ -43,11 +43,11 @@ import org.slf4j.Logger;
 /**
  * @author acoburn
  */
-public class HttpResolver implements DatastreamService.Resolver {
+public class HttpResolver implements DatastreamService.Resolver, AutoCloseable {
 
     private static final Logger LOGGER = getLogger(HttpResolver.class);
 
-    private static CloseableHttpClient httpClient = createPoolingHttpClient();
+    private CloseableHttpClient httpClient = createPoolingHttpClient();
 
     /**
      * Create a pooling HTTP client
@@ -56,7 +56,7 @@ public class HttpResolver implements DatastreamService.Resolver {
      * <p>Note: The maximum connection count is 5 but can be overridden with a system property "http.maxConnections".
      * </p>
      */
-    public static CloseableHttpClient createPoolingHttpClient() {
+    private static CloseableHttpClient createPoolingHttpClient() {
         final int max = Integer.parseInt(System.getProperty("http.maxConnections", "5"));
         return HttpClientBuilder.create()
                 .setRedirectStrategy(new LaxRedirectStrategy())
@@ -67,10 +67,17 @@ public class HttpResolver implements DatastreamService.Resolver {
     }
 
     /**
-     * Set the default HTTP client for this resolver
-     * @param client the http client
+     * Create an HttpResolver using the default HTTP client
      */
-    public static void setDefaultHttpClient(final CloseableHttpClient client) {
+    public HttpResolver() {
+        this(createPoolingHttpClient());
+    }
+
+    /**
+     * Create an HttpResolver with a provided client
+     * @param client the client
+     */
+    public HttpResolver(final CloseableHttpClient client) {
         requireNonNull(client, "HTTP client may not be null!");
         httpClient = client;
     }

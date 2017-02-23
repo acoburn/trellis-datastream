@@ -89,17 +89,6 @@ public class DefaultDatastreamService implements DatastreamService {
         return ofNullable(algorithm).map(DigestUtils::getDigest).flatMap(digest(stream));
     }
 
-    @Override
-    public void close() {
-        resolvers.values().forEach(resolver -> {
-            try {
-                resolver.close();
-            } catch (final Exception ex) {
-                LOGGER.error("Unable to close the resolver: {}", ex.getMessage());
-            }
-        });
-    }
-
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
         return algorithm -> {
             try {
