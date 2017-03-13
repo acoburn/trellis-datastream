@@ -21,7 +21,6 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.codec.binary.Hex.encodeHexString;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import edu.amherst.acdc.trellis.api.Datastream;
 import edu.amherst.acdc.trellis.spi.DatastreamService;
 
 import java.io.IOException;
@@ -70,12 +69,6 @@ public class DefaultDatastreamService implements DatastreamService {
         resolver.getUriSchemes().forEach(scheme -> {
             resolvers.remove(scheme, resolver);
         });
-    }
-
-    @Override
-    public IRI generateIdentifier(final IRI identifier, final Datastream.StoragePartition partition) {
-        // TODO -- what am I doing with this? Does it even belong here?
-        return null;
     }
 
     @Override
