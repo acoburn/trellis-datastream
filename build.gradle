@@ -223,7 +223,7 @@ checkstyle {
 sonarqube {
     properties {
         property "sonar.projectName", "Trellis Repository Datastream Service"
-        property "sonar.projectKey", "org.trellisldp-datastream"
+        property "sonar.projectKey", "org.trellisldp:trellis-datastream"
         property "sonar.links.homepage", "https://github.com/trellis-ldp/trellis"
         property "sonar.links.issue", "https://github.com/trellis-ldp/trellis-datastream/issues"
         property "sonar.links.scm_dev", "scm:git:git@github.com:trellis-ldp/trellis-datastream.git"
