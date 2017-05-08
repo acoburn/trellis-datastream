@@ -20,8 +20,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.trellisldp.spi.DatastreamService;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,6 +34,7 @@ import java.util.Optional;
 
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
+import org.trellisldp.spi.DatastreamService;
 
 /**
  * @author acoburn

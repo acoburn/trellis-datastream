@@ -19,8 +19,6 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.codec.binary.Hex.encodeHexString;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.trellisldp.spi.DatastreamService;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -35,6 +33,7 @@ import java.util.function.Function;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
+import org.trellisldp.spi.DatastreamService;
 
 /**
  * @author acoburn

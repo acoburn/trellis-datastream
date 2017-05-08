@@ -19,8 +19,6 @@ import static java.util.Optional.ofNullable;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.slf4j.LoggerFactory.getLogger;
 
-import org.trellisldp.spi.DatastreamService;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -37,6 +35,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
+import org.trellisldp.spi.DatastreamService;
 
 /**
  * @author acoburn
