@@ -45,27 +45,15 @@ public class DefaultDatastreamService implements DatastreamService {
 
     final private Map<String, DatastreamService.Resolver> resolvers = new HashMap<>();
 
-    @Override
-    public void setResolvers(final List<DatastreamService.Resolver> resolvers) {
-        this.resolvers.clear();
+    /**
+     * Create a datastream service
+     * @param resolvers the resolves
+     */
+    public DefaultDatastreamService(final List<DatastreamService.Resolver> resolvers) {
         resolvers.forEach(resolver -> {
             resolver.getUriSchemes().forEach(scheme -> {
                 this.resolvers.put(scheme, resolver);
             });
-        });
-    }
-
-    @Override
-    public synchronized void bind(final DatastreamService.Resolver resolver) {
-        resolver.getUriSchemes().forEach(scheme -> {
-            resolvers.put(scheme, resolver);
-        });
-    }
-
-    @Override
-    public synchronized void unbind(final DatastreamService.Resolver resolver) {
-        resolver.getUriSchemes().forEach(scheme -> {
-            resolvers.remove(scheme, resolver);
         });
     }
 
