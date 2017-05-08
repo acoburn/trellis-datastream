@@ -40,21 +40,20 @@ public class FileResolverTest {
 
     private final static RDF rdf = new SimpleRDF();
 
-    private final static IRI file = rdf.createIRI("file:test.txt");
+    private final static String directory = new File(FileResolver.class.getResource(testDoc).getPath()).getParent();
+
+    private final static IRI file = rdf.createIRI("file:" + directory + testDoc);
 
     @Test
     public void testFileExists() {
-        final File res = new File(FileResolver.class.getResource(testDoc).getPath());
-
-        final FileResolver resolver = new FileResolver(res.getParent());
+        final FileResolver resolver = new FileResolver();
         assertTrue(resolver.exists(file));
-        assertFalse(resolver.exists(rdf.createIRI("file:fake.txt")));
+        assertFalse(resolver.exists(rdf.createIRI("file:" + directory + "/fake.txt")));
     }
 
     @Test
     public void testFileContent() {
-        final File res = new File(FileResolver.class.getResource(testDoc).getPath());
-        final FileResolver resolver = new FileResolver(res.getParent());
+        final FileResolver resolver = new FileResolver();
         assertTrue(resolver.getContent(file).isPresent());
         assertEquals("A test document.\n", resolver.getContent(file).map(this::uncheckedToString).get());
     }
@@ -62,9 +61,8 @@ public class FileResolverTest {
     @Test
     public void testSetFileContent() {
         final String contents = "A new file";
-        final File res = new File(FileResolver.class.getResource(testDoc).getPath());
-        final FileResolver resolver = new FileResolver(res.getParent());
-        final IRI fileIRI = rdf.createIRI("file:" + randomFilename());
+        final FileResolver resolver = new FileResolver();
+        final IRI fileIRI = rdf.createIRI("file:" + directory + randomFilename());
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
         resolver.setContent(fileIRI, inputStream);
         assertTrue(resolver.getContent(fileIRI).isPresent());
@@ -73,8 +71,7 @@ public class FileResolverTest {
 
     @Test
     public void testFileSchemes() {
-        final File res = new File(FileResolver.class.getResource(testDoc).getPath());
-        final FileResolver resolver = new FileResolver(res.getParent());
+        final FileResolver resolver = new FileResolver();
         assertEquals(1L, resolver.getUriSchemes().size());
         assertTrue(resolver.getUriSchemes().contains("file"));
     }
@@ -90,6 +87,6 @@ public class FileResolverTest {
     private static String randomFilename() {
         final SecureRandom random = new SecureRandom();
         final String filename = new BigInteger(50, random).toString(32);
-        return filename + ".json";
+        return "/" + filename + ".json";
     }
 }

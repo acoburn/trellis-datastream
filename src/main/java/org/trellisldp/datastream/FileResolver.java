@@ -41,18 +41,7 @@ import org.trellisldp.spi.DatastreamService;
  */
 public class FileResolver implements DatastreamService.Resolver {
 
-    private final File directory;
-
     private static final Logger LOGGER = getLogger(FileResolver.class);
-
-    /**
-     * Create a new file resolver
-     * @param directory the base directory in which to store and retrieve files
-     */
-    public FileResolver(final String directory) {
-        requireNonNull(directory, "Directory may not be null!");
-        this.directory = new File(directory);
-    }
 
     @Override
     public List<String> getUriSchemes() {
@@ -92,6 +81,6 @@ public class FileResolver implements DatastreamService.Resolver {
 
     private Optional<File> getFileFromIdentifier(final IRI identifier) {
         return ofNullable(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getSchemeSpecificPart)
-                .filter(Objects::nonNull).map(path -> new File(directory, path));
+                .filter(Objects::nonNull).map(File::new);
     }
 }
