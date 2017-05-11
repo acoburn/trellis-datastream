@@ -13,10 +13,18 @@
  */
 package org.trellisldp.datastream;
 
+import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.codec.binary.Hex.encodeHexString;
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD2;
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD5;
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_1;
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_256;
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_384;
+import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_512;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -28,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -41,6 +50,9 @@ import org.trellisldp.spi.DatastreamService;
 public class DefaultDatastreamService implements DatastreamService {
 
     private static final Logger LOGGER = getLogger(DefaultDatastreamService.class);
+
+    private static final Set<String> algorithms = asList(MD5, MD2, SHA_1, SHA_256, SHA_384, SHA_512).stream()
+        .collect(toSet());
 
     final private Map<String, DatastreamService.Resolver> resolvers = new HashMap<>();
 
@@ -65,6 +77,11 @@ public class DefaultDatastreamService implements DatastreamService {
     @Override
     public Optional<String> hexDigest(final String algorithm, final InputStream stream) {
         return ofNullable(algorithm).map(DigestUtils::getDigest).flatMap(digest(stream));
+    }
+
+    @Override
+    public Set<String> supportedAlgorithms() {
+        return algorithms;
     }
 
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
