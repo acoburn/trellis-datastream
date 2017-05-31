@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trellisldp.datastream;
+package org.trellisldp.binary;
 
 import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
@@ -35,12 +35,12 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
-import org.trellisldp.spi.DatastreamService;
+import org.trellisldp.spi.BinaryService;
 
 /**
  * @author acoburn
  */
-public class HttpResolver implements DatastreamService.Resolver, AutoCloseable {
+public class HttpResolver implements BinaryService.Resolver, AutoCloseable {
 
     private static final Logger LOGGER = getLogger(HttpResolver.class);
 

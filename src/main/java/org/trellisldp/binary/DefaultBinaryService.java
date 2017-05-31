@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trellisldp.datastream;
+package org.trellisldp.binary;
 
 import static java.util.Arrays.asList;
 import static java.util.Optional.empty;
@@ -42,25 +42,25 @@ import java.util.function.Function;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
-import org.trellisldp.spi.DatastreamService;
+import org.trellisldp.spi.BinaryService;
 
 /**
  * @author acoburn
  */
-public class DefaultDatastreamService implements DatastreamService {
+public class DefaultBinaryService implements BinaryService {
 
-    private static final Logger LOGGER = getLogger(DefaultDatastreamService.class);
+    private static final Logger LOGGER = getLogger(DefaultBinaryService.class);
 
     private static final Set<String> algorithms = asList(MD5, MD2, SHA_1, SHA_256, SHA_384, SHA_512).stream()
         .collect(toSet());
 
-    final private Map<String, DatastreamService.Resolver> resolvers = new HashMap<>();
+    final private Map<String, BinaryService.Resolver> resolvers = new HashMap<>();
 
     /**
-     * Create a datastream service
+     * Create a binary service
      * @param resolvers the resolves
      */
-    public DefaultDatastreamService(final List<DatastreamService.Resolver> resolvers) {
+    public DefaultBinaryService(final List<BinaryService.Resolver> resolvers) {
         resolvers.forEach(resolver -> {
             resolver.getUriSchemes().forEach(scheme -> {
                 this.resolvers.put(scheme, resolver);
@@ -69,7 +69,7 @@ public class DefaultDatastreamService implements DatastreamService {
     }
 
     @Override
-    public Optional<DatastreamService.Resolver> getResolver(final IRI identifier) {
+    public Optional<BinaryService.Resolver> getResolver(final IRI identifier) {
         return of(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getScheme).map(resolvers::get)
             .filter(Objects::nonNull);
     }

@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trellisldp.datastream;
+package org.trellisldp.binary;
 
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
@@ -34,12 +34,12 @@ import java.util.Optional;
 
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
-import org.trellisldp.spi.DatastreamService;
+import org.trellisldp.spi.BinaryService;
 
 /**
  * @author acoburn
  */
-public class FileResolver implements DatastreamService.Resolver {
+public class FileResolver implements BinaryService.Resolver {
 
     private static final Logger LOGGER = getLogger(FileResolver.class);
 
@@ -69,7 +69,7 @@ public class FileResolver implements DatastreamService.Resolver {
     public void setContent(final IRI identifier, final InputStream stream, final Map<String, String> metadata) {
         requireNonNull(stream, "InputStream may not be null!");
         getFileFromIdentifier(identifier).map(File::toPath).ifPresent(path -> {
-            LOGGER.debug("Setting datastream content for {}", identifier.getIRIString());
+            LOGGER.debug("Setting binary content for {}", identifier.getIRIString());
             try {
                 copy(stream, path, REPLACE_EXISTING);
             } catch (final IOException ex) {

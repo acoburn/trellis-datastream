@@ -17,7 +17,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'org.trellisldp'
-description = 'Trellis Datastream Service'
+description = 'Trellis Binary Service'
 
 ext {
     vendor = 'Trellis LDP'
@@ -88,7 +88,7 @@ jar {
         license project.license
 
         instruction 'Import-Package', '*'
-        instruction 'Export-Package', "org.trellisldp.datastream;version=${projectOsgiVersion}"
+        instruction 'Export-Package', "org.trellisldp.binary;version=${projectOsgiVersion}"
         instruction 'Require-Capability', '''
             osgi.extender; filter:="(&(osgi.extender=osgi.serviceloader.registrar)(osgi.extender=osgi.serviceloader.processor))",
             osgi.serviceloader; filter:="(osgi.serviceloader=org.apache.commons.rdf.api.RDF)";cardinality:=at_least_one'''
@@ -163,8 +163,8 @@ uploadArchives {
             packaging 'jar'
             url 'http://www.trellisldp.org'
             inceptionYear '2017'
-            name 'Trellis Repository datastream service'
-            description 'The datastream service for a trellis repository'
+            name 'Trellis Repository binary service'
+            description 'The binary service for a trellis repository'
 
             organization {
                 name project.vendor
@@ -186,9 +186,9 @@ uploadArchives {
             }
 
             scm {
-                connection 'scm:git:git://github.com/trellis-ldp/trellis-datastream.git'
-                developerConnection 'scm:git:git@github.com/trellis-ldp/trellis-datastream.git'
-                url 'https://github.com/trellis-ldp/trellis-datastream'
+                connection 'scm:git:git://github.com/trellis-ldp/trellis-binary.git'
+                developerConnection 'scm:git:git@github.com/trellis-ldp/trellis-binary.git'
+                url 'https://github.com/trellis-ldp/trellis-binary'
                 tag 'HEAD'
             }
 
@@ -222,11 +222,11 @@ checkstyle {
 
 sonarqube {
     properties {
-        property "sonar.projectName", "Trellis Repository Datastream Service"
-        property "sonar.projectKey", "org.trellisldp:trellis-datastream"
+        property "sonar.projectName", "Trellis Repository Binary Service"
+        property "sonar.projectKey", "org.trellisldp:trellis-binary"
         property "sonar.links.homepage", "https://github.com/trellis-ldp/trellis"
-        property "sonar.links.issue", "https://github.com/trellis-ldp/trellis-datastream/issues"
-        property "sonar.links.scm_dev", "scm:git:git@github.com:trellis-ldp/trellis-datastream.git"
+        property "sonar.links.issue", "https://github.com/trellis-ldp/trellis-binary/issues"
+        property "sonar.links.scm_dev", "scm:git:git@github.com:trellis-ldp/trellis-binary.git"
     }
 }
 

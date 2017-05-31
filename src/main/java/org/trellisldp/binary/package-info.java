@@ -12,11 +12,11 @@
  * limitations under the License.
  */
 /**
- * Trellis Datastream Service Implementation
+ * Trellis Binary Service Implementation
  *
- * <p>This package implements the main Datastream Service
- * abstractions for storing and retrieving datastream content.</p>
+ * <p>This package implements the main Binary Service
+ * abstractions for storing and retrieving binary content.</p>
  *
  * @author acoburn
  */
-package org.trellisldp.datastream;
+package org.trellisldp.binary;
