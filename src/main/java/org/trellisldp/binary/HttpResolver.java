@@ -54,11 +54,8 @@ public class HttpResolver implements BinaryService.Resolver, AutoCloseable {
      * </p>
      */
     private static CloseableHttpClient createPoolingHttpClient() {
-        final int max = Integer.parseInt(System.getProperty("http.maxConnections", "5"));
         return HttpClientBuilder.create()
                 .setRedirectStrategy(new LaxRedirectStrategy())
-                .setMaxConnPerRoute(max)
-                .setMaxConnTotal(2 * max)
                 .useSystemProperties()
                 .build();
     }
