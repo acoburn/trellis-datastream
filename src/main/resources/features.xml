@@ -10,7 +10,6 @@
 
     <bundle dependency="true">mvn:org.apache.commons/commons-rdf-api/${commonsRdfVersion}</bundle>
     <bundle dependency="true">mvn:org.apache.commons/commons-codec/${commonsCodecVersion}</bundle>
-    <bundle dependency="true">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
     <bundle dependency="true">mvn:org.apache.httpcomponents/httpclient/${httpClientVersion}</bundle>
 
     <bundle>mvn:org.trellisldp/trellis-binary/${project.version}</bundle>
