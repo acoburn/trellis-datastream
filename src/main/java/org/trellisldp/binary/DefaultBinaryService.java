@@ -44,7 +44,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
 import org.trellisldp.spi.BinaryService;
-import org.trellisldp.spi.IdentifierService;
 import org.trellisldp.spi.RuntimeRepositoryException;
 
 /**
@@ -59,20 +58,21 @@ public class DefaultBinaryService implements BinaryService {
 
     private final Map<String, BinaryService.Resolver> resolvers = new HashMap<>();
 
-    private final IdentifierService idService;
+    private final Map<String, Supplier<String>> partitions;
 
     /**
      * Create a binary service
      * @param resolvers the resolves
-     * @param idService the identifier service
+     * @param partitions the identifier suppliers for each partition
      */
-    public DefaultBinaryService(final List<BinaryService.Resolver> resolvers, final IdentifierService idService) {
+    public DefaultBinaryService(final List<BinaryService.Resolver> resolvers,
+            final Map<String, Supplier<String>> partitions) {
         resolvers.forEach(resolver -> {
             resolver.getUriSchemes().forEach(scheme -> {
                 this.resolvers.put(scheme, resolver);
             });
         });
-        this.idService = idService;
+        this.partitions = partitions;
     }
 
     @Override
@@ -92,11 +92,11 @@ public class DefaultBinaryService implements BinaryService {
     }
 
     @Override
-    public Supplier<String> getIdentifierSupplier(final String prefix) {
-        if (resolvers.containsKey(prefix.split(":")[0])) {
-            return idService.getSupplier(prefix);
+    public Supplier<String> getIdentifierSupplier(final String partition) {
+        if (partitions.containsKey(partition)) {
+            return partitions.get(partition);
         }
-        throw new RuntimeRepositoryException("Unsupported identifier scheme: " + prefix);
+        throw new RuntimeRepositoryException("Invalid partition: " + partition);
     }
 
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
