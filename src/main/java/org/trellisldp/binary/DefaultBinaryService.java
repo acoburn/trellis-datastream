@@ -38,11 +38,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
 import org.trellisldp.spi.BinaryService;
+import org.trellisldp.spi.IdentifierService;
+import org.trellisldp.spi.RuntimeRepositoryException;
 
 /**
  * @author acoburn
@@ -54,18 +57,22 @@ public class DefaultBinaryService implements BinaryService {
     private static final Set<String> algorithms = asList(MD5, MD2, SHA_1, SHA_256, SHA_384, SHA_512).stream()
         .collect(toSet());
 
-    final private Map<String, BinaryService.Resolver> resolvers = new HashMap<>();
+    private final Map<String, BinaryService.Resolver> resolvers = new HashMap<>();
+
+    private final IdentifierService idService;
 
     /**
      * Create a binary service
      * @param resolvers the resolves
+     * @param idService the identifier service
      */
-    public DefaultBinaryService(final List<BinaryService.Resolver> resolvers) {
+    public DefaultBinaryService(final List<BinaryService.Resolver> resolvers, final IdentifierService idService) {
         resolvers.forEach(resolver -> {
             resolver.getUriSchemes().forEach(scheme -> {
                 this.resolvers.put(scheme, resolver);
             });
         });
+        this.idService = idService;
     }
 
     @Override
@@ -82,6 +89,14 @@ public class DefaultBinaryService implements BinaryService {
     @Override
     public Set<String> supportedAlgorithms() {
         return algorithms;
+    }
+
+    @Override
+    public Supplier<String> getIdentifierSupplier(final String prefix) {
+        if (resolvers.containsKey(prefix.split(":")[0])) {
+            return idService.getSupplier(prefix);
+        }
+        throw new RuntimeRepositoryException("Unsupported identifier scheme: " + prefix);
     }
 
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
