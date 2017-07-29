@@ -45,6 +45,7 @@ import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
 import org.trellisldp.spi.BinaryService;
 import org.trellisldp.spi.IdentifierService;
+import org.trellisldp.spi.IdentifierService.IdentifierConfiguration;
 import org.trellisldp.spi.RuntimeRepositoryException;
 
 /**
@@ -60,7 +61,7 @@ public class DefaultBinaryService implements BinaryService {
     private final Map<String, BinaryService.Resolver> resolvers = new HashMap<>();
 
     private final IdentifierService idService;
-    private final Map<String, Map<String, String>> partitions;
+    private final Map<String, IdentifierConfiguration> partitions;
 
     /**
      * Create a binary service
@@ -69,7 +70,7 @@ public class DefaultBinaryService implements BinaryService {
      * @param partitions the identifier suppliers for each partition
      */
     public DefaultBinaryService(final List<BinaryService.Resolver> resolvers, final IdentifierService idService,
-            final Map<String, Map<String, String>> partitions) {
+            final Map<String, IdentifierConfiguration> partitions) {
         resolvers.forEach(resolver -> {
             resolver.getUriSchemes().forEach(scheme -> {
                 this.resolvers.put(scheme, resolver);
@@ -97,9 +98,9 @@ public class DefaultBinaryService implements BinaryService {
 
     @Override
     public Supplier<String> getIdentifierSupplier(final String partition) {
-        // TODO add partition-specific config details here
         if (partitions.containsKey(partition)) {
-            return idService.getSupplier();
+            final IdentifierConfiguration config = partitions.get(partition);
+            return idService.getSupplier(config.getPrefix(), config.getHierarchy(), config.getLength());
         }
         throw new RuntimeRepositoryException("Invalid partition: " + partition);
     }
