@@ -13,7 +13,9 @@
  */
 package org.trellisldp.binary;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
@@ -36,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -45,13 +48,15 @@ import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
 import org.trellisldp.spi.BinaryService;
 import org.trellisldp.spi.IdentifierService;
-import org.trellisldp.spi.IdentifierService.IdentifierConfiguration;
 import org.trellisldp.spi.RuntimeRepositoryException;
 
 /**
  * @author acoburn
  */
 public class DefaultBinaryService implements BinaryService {
+
+    private static final String DEFAULT_LEVELS = "0";
+    private static final String DEFAULT_LENGTH = "2";
 
     private static final Logger LOGGER = getLogger(DefaultBinaryService.class);
 
@@ -61,23 +66,35 @@ public class DefaultBinaryService implements BinaryService {
     private final Map<String, BinaryService.Resolver> resolvers = new HashMap<>();
 
     private final IdentifierService idService;
-    private final Map<String, IdentifierConfiguration> partitions;
+    private final Map<String, IdentifierConfiguration> partitions = new HashMap<>();
 
     /**
      * Create a binary service
-     * @param resolvers the resolves
      * @param idService the identifier service
      * @param partitions the identifier suppliers for each partition
+     * @param resolvers the resolves
      */
-    public DefaultBinaryService(final List<BinaryService.Resolver> resolvers, final IdentifierService idService,
-            final Map<String, IdentifierConfiguration> partitions) {
+    public DefaultBinaryService(final IdentifierService idService, final Map<String, Properties> partitions,
+            final List<BinaryService.Resolver> resolvers) {
+        this.idService = idService;
         resolvers.forEach(resolver -> {
             resolver.getUriSchemes().forEach(scheme -> {
                 this.resolvers.put(scheme, resolver);
             });
         });
-        this.idService = idService;
-        this.partitions = partitions;
+        partitions.forEach((k, v) -> {
+            final String prefix = v.getProperty("prefix");
+            if (isNull(prefix)) {
+                throw new RuntimeRepositoryException("No prefix value defined for partition: " + k);
+            }
+            if (!this.resolvers.containsKey(prefix.split(":", 2)[0])) {
+                throw new RuntimeRepositoryException("No binary resolver defined to handle prefix " +
+                        prefix + " in partition " + k);
+            }
+            this.partitions.put(k, new IdentifierConfiguration(prefix,
+                        parseInt(v.getProperty("levels", DEFAULT_LEVELS), 10),
+                        parseInt(v.getProperty("length", DEFAULT_LENGTH), 10)));
+        });
     }
 
     @Override
