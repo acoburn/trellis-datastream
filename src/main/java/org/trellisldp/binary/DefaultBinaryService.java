@@ -92,8 +92,8 @@ public class DefaultBinaryService implements BinaryService {
                         prefix + " in partition " + k);
             }
             this.partitions.put(k, new IdentifierConfiguration(prefix,
-                        parseInt(v.getProperty("levels", DEFAULT_LEVELS), 10),
-                        parseInt(v.getProperty("length", DEFAULT_LENGTH), 10)));
+                        parseInt(v.getProperty("levels", DEFAULT_LEVELS)),
+                        parseInt(v.getProperty("length", DEFAULT_LENGTH))));
         });
     }
 
