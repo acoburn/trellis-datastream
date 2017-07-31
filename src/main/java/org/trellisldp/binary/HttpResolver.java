@@ -17,6 +17,7 @@ import static java.util.Collections.unmodifiableList;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_MULTIPLE_CHOICES;
 import static org.slf4j.LoggerFactory.getLogger;
 
 import java.io.IOException;
@@ -29,18 +30,21 @@ import java.util.Optional;
 
 import org.apache.commons.rdf.api.IRI;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
 import org.trellisldp.spi.BinaryService;
+import org.trellisldp.spi.RuntimeRepositoryException;
 
 /**
  * @author acoburn
  */
-public class HttpResolver implements BinaryService.Resolver, AutoCloseable {
+public class HttpResolver implements BinaryService.Resolver {
 
     private static final Logger LOGGER = getLogger(HttpResolver.class);
 
@@ -101,20 +105,34 @@ public class HttpResolver implements BinaryService.Resolver, AutoCloseable {
         requireNonNull(identifier,  "Identifier may not be null!");
         try {
             final HttpResponse res = httpClient.execute(new HttpGet(identifier.getIRIString()));
+            final StatusLine status = res.getStatusLine();
+            LOGGER.debug("HTTP GET Request to {} returned {} status: {}", identifier.getIRIString(),
+                    status.getStatusCode(), status.getReasonPhrase());
             return ofNullable(res.getEntity().getContent());
         } catch (final IOException ex) {
-            LOGGER.error("Error while fetching the content for " + identifier.getIRIString() + ": " + ex.getMessage());
+            LOGGER.error("IO Error while fetching the content for " + identifier.getIRIString() +
+                    ": " + ex.getMessage());
             throw new UncheckedIOException(ex);
         }
     }
 
     @Override
     public void setContent(final IRI identifier, final InputStream stream, final Map<String, String> metadata) {
-        throw new UnsupportedOperationException("Cannot set content of external HTTP-based resources");
-    }
-
-    @Override
-    public void close() throws IOException {
-        httpClient.close();
+        requireNonNull(identifier, "Identifier may not be null!");
+        try {
+            final HttpResponse res = httpClient.execute(new HttpPut(identifier.getIRIString()));
+            final StatusLine status = res.getStatusLine();
+            LOGGER.info("HTTP PUT Request to {} returned {} status: {}", identifier.getIRIString(),
+                    status.getStatusCode(), status.getReasonPhrase());
+            if (status.getStatusCode() >= SC_MULTIPLE_CHOICES) {
+                throw new RuntimeRepositoryException("HTTP PUT request to " + identifier.getIRIString() +
+                        " failed with a " + Integer.toString(status.getStatusCode()) + " " +
+                        status.getReasonPhrase());
+            }
+        } catch (final IOException ex) {
+            LOGGER.error("IO Error while setting the content for " + identifier.getIRIString() +
+                    ": " + ex.getMessage());
+            throw new UncheckedIOException(ex);
+        }
     }
 }
