@@ -24,54 +24,69 @@ import java.io.IOException;
 import java.io.File;
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.RDF;
 import org.apache.commons.rdf.simple.SimpleRDF;
+import org.junit.Before;
 import org.junit.Test;
+import org.trellisldp.spi.BinaryService.Resolver;
 
 /**
  * @author acoburn
  */
 public class FileResolverTest {
 
-    private final static String testDoc = "/test.txt";
+    private final static String testDoc = "test.txt";
+
+    private final static String partition = "partition";
 
     private final static RDF rdf = new SimpleRDF();
 
-    private final static String directory = new File(FileResolver.class.getResource(testDoc).getPath()).getParent();
+    private final static String directory = new File(FileResolver.class.getResource("/" + testDoc).getPath())
+        .getParent();
 
-    private final static IRI file = rdf.createIRI("file:" + directory + testDoc);
+    private final static IRI file = rdf.createIRI("file:" + testDoc);
+
+    private final static Map<String, String> partitions = new HashMap<>();
+
+    @Before
+    public void setUp() {
+        partitions.clear();
+        partitions.put(partition, directory);
+    }
 
     @Test
     public void testFileExists() {
-        final FileResolver resolver = new FileResolver();
-        assertTrue(resolver.exists(file));
-        assertFalse(resolver.exists(rdf.createIRI("file:" + directory + "/fake.txt")));
+        final Resolver resolver = new FileResolver(partitions);
+        assertTrue(resolver.exists(partition, file));
+        assertFalse(resolver.exists(partition, rdf.createIRI("file:fake.txt")));
     }
 
     @Test
     public void testFileContent() {
-        final FileResolver resolver = new FileResolver();
-        assertTrue(resolver.getContent(file).isPresent());
-        assertEquals("A test document.\n", resolver.getContent(file).map(this::uncheckedToString).get());
+        final Resolver resolver = new FileResolver(partitions);
+        assertTrue(resolver.getContent(partition, file).isPresent());
+        assertEquals("A test document.\n", resolver.getContent(partition, file).map(this::uncheckedToString).get());
     }
 
     @Test
     public void testSetFileContent() {
         final String contents = "A new file";
-        final FileResolver resolver = new FileResolver();
-        final IRI fileIRI = rdf.createIRI("file:" + directory + randomFilename());
+        final Resolver resolver = new FileResolver(partitions);
+        final IRI fileIRI = rdf.createIRI("file:" + randomFilename());
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
-        resolver.setContent(fileIRI, inputStream);
-        assertTrue(resolver.getContent(fileIRI).isPresent());
-        assertEquals(contents, resolver.getContent(fileIRI).map(this::uncheckedToString).get());
+        resolver.setContent(partition, fileIRI, inputStream);
+        assertTrue(resolver.getContent(partition, fileIRI).isPresent());
+        assertEquals(contents, resolver.getContent(partition, fileIRI).map(this::uncheckedToString).get());
     }
 
     @Test
     public void testFileSchemes() {
-        final FileResolver resolver = new FileResolver();
+        final Resolver resolver = new FileResolver(partitions);
         assertEquals(1L, resolver.getUriSchemes().size());
         assertTrue(resolver.getUriSchemes().contains("file"));
     }
@@ -87,6 +102,6 @@ public class FileResolverTest {
     private static String randomFilename() {
         final SecureRandom random = new SecureRandom();
         final String filename = new BigInteger(50, random).toString(32);
-        return "/" + filename + ".json";
+        return filename + ".json";
     }
 }

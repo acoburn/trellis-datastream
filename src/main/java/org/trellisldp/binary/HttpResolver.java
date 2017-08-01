@@ -89,7 +89,7 @@ public class HttpResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Boolean exists(final IRI identifier) {
+    public Boolean exists(final String partition, final IRI identifier) {
         requireNonNull(identifier, "Identifier may not be null!");
         try {
             final HttpResponse res = httpClient.execute(new HttpHead(identifier.getIRIString()));
@@ -101,7 +101,7 @@ public class HttpResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Optional<InputStream> getContent(final IRI identifier) {
+    public Optional<InputStream> getContent(final String partition, final IRI identifier) {
         requireNonNull(identifier,  "Identifier may not be null!");
         try {
             final HttpResponse res = httpClient.execute(new HttpGet(identifier.getIRIString()));
@@ -117,7 +117,8 @@ public class HttpResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public void setContent(final IRI identifier, final InputStream stream, final Map<String, String> metadata) {
+    public void setContent(final String partition, final IRI identifier, final InputStream stream,
+            final Map<String, String> metadata) {
         requireNonNull(identifier, "Identifier may not be null!");
         try {
             final HttpResponse res = httpClient.execute(new HttpPut(identifier.getIRIString()));

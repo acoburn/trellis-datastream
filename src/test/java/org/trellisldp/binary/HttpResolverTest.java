@@ -53,6 +53,7 @@ public class HttpResolverTest {
 
     private final static IRI resource = rdf.createIRI("http://acdc.amherst.edu/ontology/relationships.rdf");
     private final static IRI sslResource = rdf.createIRI("https://acdc.amherst.edu/ontology/relationships.rdf");
+    private final static String partition = "partition";
 
     @Mock
     private CloseableHttpClient mockClient;
@@ -76,24 +77,26 @@ public class HttpResolverTest {
 
         final HttpResolver resolver = new HttpResolver();
 
-        assertTrue(resolver.exists(resource));
-        assertFalse(resolver.exists(rdf.createIRI("http://acdc.amherst.edu/ontology/foo.bar")));
+        assertTrue(resolver.exists(partition, resource));
+        assertFalse(resolver.exists(partition, rdf.createIRI("http://acdc.amherst.edu/ontology/foo.bar")));
     }
 
     @Test
     public void testGetContent() {
         final HttpResolver resolver = new HttpResolver();
 
-        assertTrue(resolver.getContent(resource).isPresent());
-        assertTrue(resolver.getContent(resource).map(this::uncheckedToString).get().contains("owl:Ontology"));
+        assertTrue(resolver.getContent(partition, resource).isPresent());
+        assertTrue(resolver.getContent(partition, resource).map(this::uncheckedToString).get()
+                .contains("owl:Ontology"));
     }
 
     @Test
     public void testGetSslContent() {
         final HttpResolver resolver = new HttpResolver();
 
-        assertTrue(resolver.getContent(sslResource).isPresent());
-        assertTrue(resolver.getContent(sslResource).map(this::uncheckedToString).get().contains("owl:Ontology"));
+        assertTrue(resolver.getContent(partition, sslResource).isPresent());
+        assertTrue(resolver.getContent(partition, sslResource).map(this::uncheckedToString).get()
+                .contains("owl:Ontology"));
     }
 
     @Test(expected = RuntimeRepositoryException.class)
@@ -102,7 +105,7 @@ public class HttpResolverTest {
         final HttpResolver resolver = new HttpResolver();
 
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
-        resolver.setContent(sslResource, inputStream);
+        resolver.setContent(partition, sslResource, inputStream);
     }
 
     @Test
@@ -110,7 +113,7 @@ public class HttpResolverTest {
         final HttpResolver resolver = new HttpResolver(mockClient);
         final String contents = "A new resource";
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
-        resolver.setContent(sslResource, inputStream);
+        resolver.setContent(partition, sslResource, inputStream);
 
         verify(mockClient).execute(any(HttpPut.class));
     }
@@ -130,21 +133,21 @@ public class HttpResolverTest {
         final HttpResolver resolver = new HttpResolver(mockClient);
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
 
-        resolver.setContent(resource, inputStream);
+        resolver.setContent(partition, resource, inputStream);
     }
 
     @Test(expected = UncheckedIOException.class)
     public void testExceptedExists() throws IOException {
         when(mockClient.execute(any(HttpHead.class))).thenThrow(new IOException("Expected Error"));
         final HttpResolver resolver = new HttpResolver(mockClient);
-        resolver.exists(resource);
+        resolver.exists(partition, resource);
     }
 
     @Test(expected = UncheckedIOException.class)
     public void testExceptedGet() throws IOException {
         when(mockClient.execute(any(HttpGet.class))).thenThrow(new IOException("Expected Error"));
         final HttpResolver resolver = new HttpResolver(mockClient);
-        resolver.getContent(resource);
+        resolver.getContent(partition, resource);
     }
 
     private String uncheckedToString(final InputStream is) {

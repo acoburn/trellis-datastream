@@ -15,6 +15,7 @@ package org.trellisldp.binary;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
@@ -77,7 +78,7 @@ public class DefaultBinaryServiceTest {
         config.put("repository", props);
 
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
-                asList(new FileResolver()));
+                asList(new FileResolver(emptyMap())));
 
         assertEquals(mockSupplier, service.getIdentifierSupplier("repository"));
     }
@@ -89,7 +90,7 @@ public class DefaultBinaryServiceTest {
         config.put("repository", props);
 
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
-                asList(new FileResolver()));
+                asList(new FileResolver(emptyMap())));
     }
 
     @Test(expected = RuntimeRepositoryException.class)
@@ -100,7 +101,7 @@ public class DefaultBinaryServiceTest {
         config.put("repository", props);
 
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
-                asList(new FileResolver()));
+                asList(new FileResolver(emptyMap())));
     }
 
     @Test(expected = RuntimeRepositoryException.class)
@@ -111,7 +112,7 @@ public class DefaultBinaryServiceTest {
         config.put("repository", props);
 
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
-                asList(new FileResolver()));
+                asList(new FileResolver(emptyMap())));
 
         service.getIdentifierSupplier("nonexistent");
     }
@@ -124,7 +125,7 @@ public class DefaultBinaryServiceTest {
         config.put("repository", props);
 
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
-                asList(new FileResolver()));
+                asList(new FileResolver(emptyMap())));
 
         assertTrue(service.supportedAlgorithms().contains("MD5"));
         assertTrue(service.supportedAlgorithms().contains("SHA-1"));
@@ -137,7 +138,7 @@ public class DefaultBinaryServiceTest {
         props.setProperty("prefix", "file:");
         final Map<String, Properties> config = new HashMap<>();
         config.put("repository", props);
-        final BinaryService.Resolver resolver = new FileResolver();
+        final BinaryService.Resolver resolver = new FileResolver(emptyMap());
         final IRI fileIRI = rdf.createIRI("file:a_file_resource");
 
         final BinaryService service = new DefaultBinaryService(mockIdService, config, asList(resolver));
@@ -155,11 +156,10 @@ public class DefaultBinaryServiceTest {
         config.put("repository", props);
 
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
-                asList(new FileResolver()));
+                asList(new FileResolver(emptyMap())));
         assertEquals(of("5b82f8bf4df2bfb0e66ccaa7306fd024"), service.hexDigest("MD5", new ByteArrayInputStream(data)));
         assertEquals(of("8d72453f10079af3dfc7fcfc4109b1ed55e1839f"), service.hexDigest("SHA-1",
                     new ByteArrayInputStream(data)));
         assertEquals(empty(), service.hexDigest("MD5", mockInputStream));
     }
-
 }

@@ -64,9 +64,8 @@ public class DefaultBinaryService implements BinaryService {
         .collect(toSet());
 
     private final Map<String, BinaryService.Resolver> resolvers = new HashMap<>();
-
-    private final IdentifierService idService;
     private final Map<String, IdentifierConfiguration> partitions = new HashMap<>();
+    private final IdentifierService idService;
 
     /**
      * Create a binary service

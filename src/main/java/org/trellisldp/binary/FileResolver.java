@@ -16,6 +16,7 @@ package org.trellisldp.binary;
 import static java.nio.file.Files.copy;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -29,7 +30,6 @@ import java.io.UncheckedIOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.rdf.api.IRI;
@@ -43,14 +43,24 @@ public class FileResolver implements BinaryService.Resolver {
 
     private static final Logger LOGGER = getLogger(FileResolver.class);
 
+    private final Map<String, String> partitions;
+
+    /**
+     * Create a File-based Binary Resolver
+     * @param partitions a mapping of partition locations
+     */
+    public FileResolver(final Map<String, String> partitions) {
+        this.partitions = unmodifiableMap(partitions);
+    }
+
     @Override
     public List<String> getUriSchemes() {
         return singletonList("file");
     }
 
     @Override
-    public Optional<InputStream> getContent(final IRI identifier) {
-        return getFileFromIdentifier(identifier).map(file -> {
+    public Optional<InputStream> getContent(final String partition, final IRI identifier) {
+        return getFileFromIdentifier(partition, identifier).map(file -> {
             try {
                 return new FileInputStream(file);
             } catch (final FileNotFoundException ex) {
@@ -60,15 +70,16 @@ public class FileResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Boolean exists(final IRI identifier) {
-        return getFileFromIdentifier(identifier).filter(File::isFile).isPresent();
+    public Boolean exists(final String partition, final IRI identifier) {
+        return getFileFromIdentifier(partition, identifier).filter(File::isFile).isPresent();
     }
 
     // TODO -- support incoming digest comparisons
     @Override
-    public void setContent(final IRI identifier, final InputStream stream, final Map<String, String> metadata) {
+    public void setContent(final String partition, final IRI identifier, final InputStream stream,
+            final Map<String, String> metadata) {
         requireNonNull(stream, "InputStream may not be null!");
-        getFileFromIdentifier(identifier).map(File::toPath).ifPresent(path -> {
+        getFileFromIdentifier(partition, identifier).map(File::toPath).ifPresent(path -> {
             LOGGER.debug("Setting binary content for {}", identifier.getIRIString());
             try {
                 copy(stream, path, REPLACE_EXISTING);
@@ -79,8 +90,8 @@ public class FileResolver implements BinaryService.Resolver {
         });
     }
 
-    private Optional<File> getFileFromIdentifier(final IRI identifier) {
+    private Optional<File> getFileFromIdentifier(final String partition, final IRI identifier) {
         return ofNullable(identifier).map(IRI::getIRIString).map(URI::create).map(URI::getSchemeSpecificPart)
-                .filter(Objects::nonNull).map(File::new);
+            .filter(x -> partitions.containsKey(partition)).map(x -> new File(partitions.get(partition), x));
     }
 }
