@@ -46,6 +46,7 @@ import java.util.function.Supplier;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
+import org.trellisldp.api.Binary;
 import org.trellisldp.spi.BinaryService;
 import org.trellisldp.spi.IdentifierService;
 import org.trellisldp.spi.RuntimeRepositoryException;
@@ -130,5 +131,21 @@ public class DefaultBinaryService implements BinaryService {
             }
             return empty();
         };
+    }
+
+    @Override
+    public String initiateUpload(final String partition, final IRI identifier, final String mimeType) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public String uploadPart(final String identifier, final Integer partNumber, final Integer contentLength,
+            final InputStream content) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public Binary completeUpload(final String identifier, final Map<Integer, String> partDigests) {
+        throw new UnsupportedOperationException("Not implemented");
     }
 }
