@@ -34,12 +34,15 @@ import java.util.Optional;
 
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
+import org.trellisldp.api.Binary;
 import org.trellisldp.spi.BinaryService;
 
 /**
  * @author acoburn
  */
 public class FileResolver implements BinaryService.Resolver {
+
+    private static final String UNSUPPORTED_MESSAGE = "File Resolver does not support multipart uploads";
 
     private static final Logger LOGGER = getLogger(FileResolver.class);
 
@@ -72,6 +75,27 @@ public class FileResolver implements BinaryService.Resolver {
     @Override
     public Boolean exists(final String partition, final IRI identifier) {
         return getFileFromIdentifier(partition, identifier).filter(File::isFile).isPresent();
+    }
+
+    @Override
+    public Boolean supportsMultipartUpload() {
+        return false;
+    }
+
+    @Override
+    public String initiateUpload(final String partition, final IRI identifier, final String mimeType) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public String uploadPart(final String identifier, final Integer partNumber, final Integer contentLength,
+            final InputStream content) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public Binary completeUpload(final String identifier, final Map<Integer, String> partDigests) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 
     // TODO -- support incoming digest comparisons

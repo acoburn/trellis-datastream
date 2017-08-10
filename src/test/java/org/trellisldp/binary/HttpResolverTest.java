@@ -14,6 +14,7 @@
 package org.trellisldp.binary;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -41,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.junit.Before;
 import org.junit.Test;
+import org.trellisldp.spi.BinaryService.Resolver;
 import org.trellisldp.spi.RuntimeRepositoryException;
 
 /**
@@ -75,7 +77,7 @@ public class HttpResolverTest {
     @Test
     public void testExists() {
 
-        final HttpResolver resolver = new HttpResolver();
+        final Resolver resolver = new HttpResolver();
 
         assertTrue(resolver.exists(partition, resource));
         assertFalse(resolver.exists(partition, rdf.createIRI("http://acdc.amherst.edu/ontology/foo.bar")));
@@ -83,7 +85,7 @@ public class HttpResolverTest {
 
     @Test
     public void testGetContent() {
-        final HttpResolver resolver = new HttpResolver();
+        final Resolver resolver = new HttpResolver();
 
         assertTrue(resolver.getContent(partition, resource).isPresent());
         assertTrue(resolver.getContent(partition, resource).map(this::uncheckedToString).get()
@@ -92,7 +94,7 @@ public class HttpResolverTest {
 
     @Test
     public void testGetSslContent() {
-        final HttpResolver resolver = new HttpResolver();
+        final Resolver resolver = new HttpResolver();
 
         assertTrue(resolver.getContent(partition, sslResource).isPresent());
         assertTrue(resolver.getContent(partition, sslResource).map(this::uncheckedToString).get()
@@ -102,7 +104,7 @@ public class HttpResolverTest {
     @Test(expected = RuntimeRepositoryException.class)
     public void testSetContent() {
         final String contents = "A new resource";
-        final HttpResolver resolver = new HttpResolver();
+        final Resolver resolver = new HttpResolver();
 
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
         resolver.setContent(partition, sslResource, inputStream);
@@ -110,7 +112,7 @@ public class HttpResolverTest {
 
     @Test
     public void testMockedClient() throws IOException {
-        final HttpResolver resolver = new HttpResolver(mockClient);
+        final Resolver resolver = new HttpResolver(mockClient);
         final String contents = "A new resource";
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
         resolver.setContent(partition, sslResource, inputStream);
@@ -120,17 +122,50 @@ public class HttpResolverTest {
 
     @Test
     public void testHttpSchemes() {
-        final HttpResolver resolver = new HttpResolver();
+        final Resolver resolver = new HttpResolver();
         assertEquals(2L, resolver.getUriSchemes().size());
         assertTrue(resolver.getUriSchemes().contains("http"));
         assertTrue(resolver.getUriSchemes().contains("https"));
     }
 
+    @Test
+    public void testMultipart() {
+        final Resolver resolver = new HttpResolver();
+        assertFalse(resolver.supportsMultipartUpload());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testIniateMultipart() {
+        final Resolver resolver = new HttpResolver();
+        resolver.initiateUpload(partition, resource, "text/plain");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartComplete() {
+        final Resolver resolver = new HttpResolver();
+        resolver.completeUpload("test-identifier", emptyMap());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartUpload() {
+        final String contents = "A new resource";
+        final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
+        final Resolver resolver = new HttpResolver();
+        resolver.uploadPart("test-identifier", 1, 10, inputStream);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartInitiate() {
+        final Resolver resolver = new HttpResolver();
+        resolver.initiateUpload(partition, resource, "text/plain");
+    }
+
+
     @Test(expected = UncheckedIOException.class)
     public void testExceptedPut() throws IOException {
         when(mockClient.execute(any(HttpPut.class))).thenThrow(new IOException("Expected Error"));
         final String contents = "A new resource";
-        final HttpResolver resolver = new HttpResolver(mockClient);
+        final Resolver resolver = new HttpResolver(mockClient);
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
 
         resolver.setContent(partition, resource, inputStream);
@@ -139,14 +174,14 @@ public class HttpResolverTest {
     @Test(expected = UncheckedIOException.class)
     public void testExceptedExists() throws IOException {
         when(mockClient.execute(any(HttpHead.class))).thenThrow(new IOException("Expected Error"));
-        final HttpResolver resolver = new HttpResolver(mockClient);
+        final Resolver resolver = new HttpResolver(mockClient);
         resolver.exists(partition, resource);
     }
 
     @Test(expected = UncheckedIOException.class)
     public void testExceptedGet() throws IOException {
         when(mockClient.execute(any(HttpGet.class))).thenThrow(new IOException("Expected Error"));
-        final HttpResolver resolver = new HttpResolver(mockClient);
+        final Resolver resolver = new HttpResolver(mockClient);
         resolver.getContent(partition, resource);
     }
 

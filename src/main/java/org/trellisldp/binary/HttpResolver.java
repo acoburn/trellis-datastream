@@ -38,6 +38,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
+import org.trellisldp.api.Binary;
 import org.trellisldp.spi.BinaryService;
 import org.trellisldp.spi.RuntimeRepositoryException;
 
@@ -45,6 +46,8 @@ import org.trellisldp.spi.RuntimeRepositoryException;
  * @author acoburn
  */
 public class HttpResolver implements BinaryService.Resolver {
+
+    private static final String UNSUPPORTED_MESSAGE = "HTTP Resolver does not support multipart uploads";
 
     private static final Logger LOGGER = getLogger(HttpResolver.class);
 
@@ -86,6 +89,27 @@ public class HttpResolver implements BinaryService.Resolver {
             add("http");
             add("https");
         }});
+    }
+
+    @Override
+    public Boolean supportsMultipartUpload() {
+        return false;
+    }
+
+    @Override
+    public String initiateUpload(final String partition, final IRI identifier, final String mimeType) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public String uploadPart(final String identifier, final Integer partNumber, final Integer contentLength,
+            final InputStream content) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public Binary completeUpload(final String identifier, final Map<Integer, String> partDigests) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 
     @Override

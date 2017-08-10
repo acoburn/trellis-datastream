@@ -14,13 +14,17 @@
 package org.trellisldp.binary;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.File;
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -33,11 +37,15 @@ import org.apache.commons.rdf.api.RDF;
 import org.apache.commons.rdf.simple.SimpleRDF;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.trellisldp.spi.BinaryService.Resolver;
 
 /**
  * @author acoburn
  */
+@RunWith(MockitoJUnitRunner.class)
 public class FileResolverTest {
 
     private final static String testDoc = "test.txt";
@@ -52,6 +60,9 @@ public class FileResolverTest {
     private final static IRI file = rdf.createIRI("file:" + testDoc);
 
     private final static Map<String, String> partitions = new HashMap<>();
+
+    @Mock
+    private InputStream mockInputStream;
 
     @Before
     public void setUp() {
@@ -84,11 +95,52 @@ public class FileResolverTest {
         assertEquals(contents, resolver.getContent(partition, fileIRI).map(this::uncheckedToString).get());
     }
 
+    @Test(expected = UncheckedIOException.class)
+    public void testGetFileContentError() throws IOException {
+        final Resolver resolver = new FileResolver(partitions);
+        final IRI fileIRI = rdf.createIRI("file:" + randomFilename());
+        resolver.getContent(partition, fileIRI);
+    }
+
+    @Test(expected = UncheckedIOException.class)
+    public void testSetFileContentError() throws IOException {
+        when(mockInputStream.read(any(byte[].class))).thenThrow(new IOException("Expected error"));
+        final Resolver resolver = new FileResolver(partitions);
+        final IRI fileIRI = rdf.createIRI("file:" + randomFilename());
+        resolver.setContent(partition, fileIRI, mockInputStream);
+    }
+
     @Test
     public void testFileSchemes() {
         final Resolver resolver = new FileResolver(partitions);
         assertEquals(1L, resolver.getUriSchemes().size());
         assertTrue(resolver.getUriSchemes().contains("file"));
+    }
+
+    @Test
+    public void testMultipart() {
+        final Resolver resolver = new FileResolver(partitions);
+        assertFalse(resolver.supportsMultipartUpload());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartComplete() {
+        final Resolver resolver = new FileResolver(partitions);
+        resolver.completeUpload("test-identifier", emptyMap());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartUpload() {
+        final String contents = "A new resource";
+        final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
+        final Resolver resolver = new FileResolver(partitions);
+        resolver.uploadPart("test-identifier", 1, 10, inputStream);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartInitiate() {
+        final Resolver resolver = new FileResolver(partitions);
+        resolver.initiateUpload(partition, file, "text/plain");
     }
 
     private String uncheckedToString(final InputStream is) {
