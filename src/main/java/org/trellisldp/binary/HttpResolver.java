@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.IRI;
 import org.apache.http.HttpResponse;
@@ -102,8 +103,7 @@ public class HttpResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public String uploadPart(final String identifier, final Integer partNumber, final Integer contentLength,
-            final InputStream content) {
+    public String uploadPart(final String identifier, final Integer partNumber, final InputStream content) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 
@@ -114,6 +114,11 @@ public class HttpResolver implements BinaryService.Resolver {
 
     @Override
     public void abortUpload(final String identifier) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public Stream<Map.Entry<Integer, String>> listParts(final String identifier) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 

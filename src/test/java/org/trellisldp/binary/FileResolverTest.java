@@ -136,11 +136,17 @@ public class FileResolverTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
+    public void testListParts() {
+        final Resolver resolver = new FileResolver(partitions);
+        resolver.listParts("foo");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
     public void testMultipartUpload() {
         final String contents = "A new resource";
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
         final Resolver resolver = new FileResolver(partitions);
-        resolver.uploadPart("test-identifier", 1, 10, inputStream);
+        resolver.uploadPart("test-identifier", 1, inputStream);
     }
 
     @Test(expected = UnsupportedOperationException.class)

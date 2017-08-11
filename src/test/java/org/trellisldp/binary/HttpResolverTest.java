@@ -157,13 +157,19 @@ public class HttpResolverTest {
         final String contents = "A new resource";
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
         final Resolver resolver = new HttpResolver();
-        resolver.uploadPart("test-identifier", 1, 10, inputStream);
+        resolver.uploadPart("test-identifier", 1, inputStream);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void testMultipartInitiate() {
         final Resolver resolver = new HttpResolver();
         resolver.initiateUpload(partition, resource, "text/plain");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartList() {
+        final Resolver resolver = new HttpResolver();
+        resolver.listParts("foo");
     }
 
 
