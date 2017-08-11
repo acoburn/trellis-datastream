@@ -124,6 +124,12 @@ public class FileResolverTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartAbort() {
+        final Resolver resolver = new FileResolver(partitions);
+        resolver.abortUpload("test-identifier");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
     public void testMultipartComplete() {
         final Resolver resolver = new FileResolver(partitions);
         resolver.completeUpload("test-identifier", emptyMap());

@@ -144,6 +144,9 @@ public class DefaultBinaryServiceTest {
         final BinaryService service = new DefaultBinaryService(mockIdService, config, asList(resolver));
 
         assertEquals(of(resolver), service.getResolver(fileIRI));
+        assertEquals(of(resolver), service.getResolverForPartition("repository"));
+        assertEquals(empty(), service.getResolver(rdf.createIRI("test:ex")));
+        assertEquals(empty(), service.getResolverForPartition("blah"));
     }
 
     @Test

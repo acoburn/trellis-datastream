@@ -98,6 +98,11 @@ public class FileResolver implements BinaryService.Resolver {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 
+    @Override
+    public void abortUpload(final String identifier) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
     // TODO -- support incoming digest comparisons
     @Override
     public void setContent(final String partition, final IRI identifier, final InputStream stream,

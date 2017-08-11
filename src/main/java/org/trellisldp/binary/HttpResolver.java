@@ -113,6 +113,11 @@ public class HttpResolver implements BinaryService.Resolver {
     }
 
     @Override
+    public void abortUpload(final String identifier) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
     public Boolean exists(final String partition, final IRI identifier) {
         requireNonNull(identifier, "Identifier may not be null!");
         try {

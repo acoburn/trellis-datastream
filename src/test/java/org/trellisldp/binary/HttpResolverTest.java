@@ -141,6 +141,12 @@ public class HttpResolverTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartAbort() {
+        final Resolver resolver = new HttpResolver();
+        resolver.abortUpload("test-identifier");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
     public void testMultipartComplete() {
         final Resolver resolver = new HttpResolver();
         resolver.completeUpload("test-identifier", emptyMap());

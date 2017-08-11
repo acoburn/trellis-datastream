@@ -103,6 +103,13 @@ public class DefaultBinaryService implements BinaryService {
     }
 
     @Override
+    public Optional<BinaryService.Resolver> getResolverForPartition(final String partition) {
+        return of(partition).filter(partitions::containsKey).map(partitions::get)
+            .map(IdentifierConfiguration::getPrefix).map(prefix -> prefix.split(":", 2)[0])
+            .filter(resolvers::containsKey).map(resolvers::get);
+    }
+
+    @Override
     public Optional<String> hexDigest(final String algorithm, final InputStream stream) {
         return ofNullable(algorithm).map(DigestUtils::getDigest).flatMap(digest(stream));
     }
