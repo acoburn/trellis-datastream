@@ -63,6 +63,11 @@ public class FileResolver implements BinaryService.Resolver {
     }
 
     @Override
+    public Boolean exists(final String partition, final IRI identifier) {
+         return getFileFromIdentifier(partition, identifier).filter(File::isFile).isPresent();
+    }
+
+    @Override
     public Optional<InputStream> getContent(final String partition, final IRI identifier) {
         return getFileFromIdentifier(partition, identifier).map(file -> {
             try {
@@ -74,8 +79,8 @@ public class FileResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Boolean exists(final String partition, final IRI identifier) {
-        return getFileFromIdentifier(partition, identifier).filter(File::isFile).isPresent();
+    public Boolean uploadSessionExists(final String identifier) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 
     @Override
@@ -94,7 +99,7 @@ public class FileResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Binary completeUpload(final String identifier, final Map<Integer, String> partDigests) {
+    public Map.Entry<IRI, Binary> completeUpload(final String identifier, final Map<Integer, String> partDigests) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 

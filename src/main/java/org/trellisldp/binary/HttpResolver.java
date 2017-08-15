@@ -108,7 +108,7 @@ public class HttpResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Binary completeUpload(final String identifier, final Map<Integer, String> partDigests) {
+    public Map.Entry<IRI, Binary> completeUpload(final String identifier, final Map<Integer, String> partDigests) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 
@@ -119,6 +119,11 @@ public class HttpResolver implements BinaryService.Resolver {
 
     @Override
     public Stream<Map.Entry<Integer, String>> listParts(final String identifier) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public Boolean uploadSessionExists(final String identifier) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 

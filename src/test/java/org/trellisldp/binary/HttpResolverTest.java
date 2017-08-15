@@ -161,6 +161,12 @@ public class HttpResolverTest {
     }
 
     @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartSessionExists() {
+        final Resolver resolver = new HttpResolver();
+        resolver.uploadSessionExists("test-identifier");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
     public void testMultipartInitiate() {
         final Resolver resolver = new HttpResolver();
         resolver.initiateUpload(partition, resource, "text/plain");

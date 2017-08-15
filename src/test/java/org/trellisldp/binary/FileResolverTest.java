@@ -155,6 +155,12 @@ public class FileResolverTest {
         resolver.initiateUpload(partition, file, "text/plain");
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void testMultipartIdentifierExists() {
+        final Resolver resolver = new FileResolver(partitions);
+        resolver.uploadSessionExists("test-identifier");
+    }
+
     private String uncheckedToString(final InputStream is) {
         try {
             return IOUtils.toString(is, UTF_8);
