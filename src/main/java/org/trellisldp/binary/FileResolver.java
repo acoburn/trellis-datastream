@@ -35,8 +35,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
-import org.trellisldp.api.Binary;
 import org.trellisldp.spi.BinaryService;
+import org.trellisldp.spi.BinaryService.MultipartUpload;
 
 /**
  * @author acoburn
@@ -99,7 +99,7 @@ public class FileResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Map.Entry<IRI, Binary> completeUpload(final String identifier, final Map<Integer, String> partDigests) {
+    public MultipartUpload completeUpload(final String identifier, final Map<Integer, String> partDigests) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 

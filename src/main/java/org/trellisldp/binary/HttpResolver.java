@@ -39,8 +39,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.slf4j.Logger;
-import org.trellisldp.api.Binary;
 import org.trellisldp.spi.BinaryService;
+import org.trellisldp.spi.BinaryService.MultipartUpload;
 import org.trellisldp.spi.RuntimeRepositoryException;
 
 /**
@@ -108,7 +108,7 @@ public class HttpResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Map.Entry<IRI, Binary> completeUpload(final String identifier, final Map<Integer, String> partDigests) {
+    public MultipartUpload completeUpload(final String identifier, final Map<Integer, String> partDigests) {
         throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 
