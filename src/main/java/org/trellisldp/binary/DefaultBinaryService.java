@@ -20,7 +20,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.codec.binary.Hex.encodeHexString;
+import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD2;
 import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD5;
 import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_1;
@@ -110,7 +110,7 @@ public class DefaultBinaryService implements BinaryService {
     }
 
     @Override
-    public Optional<String> hexDigest(final String algorithm, final InputStream stream) {
+    public Optional<String> digest(final String algorithm, final InputStream stream) {
         return ofNullable(algorithm).map(DigestUtils::getDigest).flatMap(digest(stream));
     }
 
@@ -131,7 +131,7 @@ public class DefaultBinaryService implements BinaryService {
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
         return algorithm -> {
             try {
-                return of(encodeHexString(DigestUtils.updateDigest(algorithm, stream).digest()));
+                return of(encodeBase64String(DigestUtils.updateDigest(algorithm, stream).digest()));
             } catch (final IOException ex) {
                 LOGGER.error("Error computing digest: {}", ex.getMessage());
             }

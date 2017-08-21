@@ -150,7 +150,7 @@ public class DefaultBinaryServiceTest {
     }
 
     @Test
-    public void testHexDigest() {
+    public void testBase64Digest() {
         final byte[] data = "Some data".getBytes(UTF_8);
 
         final Properties props = new Properties();
@@ -160,9 +160,9 @@ public class DefaultBinaryServiceTest {
 
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
                 asList(new FileResolver(emptyMap())));
-        assertEquals(of("5b82f8bf4df2bfb0e66ccaa7306fd024"), service.hexDigest("MD5", new ByteArrayInputStream(data)));
-        assertEquals(of("8d72453f10079af3dfc7fcfc4109b1ed55e1839f"), service.hexDigest("SHA-1",
+        assertEquals(of("W4L4v03yv7DmbMqnMG/QJA=="), service.digest("MD5", new ByteArrayInputStream(data)));
+        assertEquals(of("jXJFPxAHmvPfx/z8QQmx7VXhg58="), service.digest("SHA-1",
                     new ByteArrayInputStream(data)));
-        assertEquals(empty(), service.hexDigest("MD5", mockInputStream));
+        assertEquals(empty(), service.digest("MD5", mockInputStream));
     }
 }
