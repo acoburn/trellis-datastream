@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 import org.apache.commons.rdf.api.IRI;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
@@ -171,6 +172,26 @@ public class HttpResolver implements BinaryService.Resolver {
             }
         } catch (final IOException ex) {
             LOGGER.error("IO Error while setting the content for " + identifier.getIRIString() +
+                    ": " + ex.getMessage());
+            throw new UncheckedIOException(ex);
+        }
+    }
+
+    @Override
+    public void purgeContent(final String partition, final IRI identifier) {
+        requireNonNull(identifier, "Identifier may not be null!");
+        try {
+            final HttpResponse res = httpClient.execute(new HttpDelete(identifier.getIRIString()));
+            final StatusLine status = res.getStatusLine();
+            LOGGER.info("HTTP DELETE Request to {} returned {} status: {}", identifier.getIRIString(),
+                    status.getStatusCode(), status.getReasonPhrase());
+            if (status.getStatusCode() >= SC_MULTIPLE_CHOICES) {
+                throw new RuntimeRepositoryException("HTTP DELETE request to " + identifier.getIRIString() +
+                        " failed with a " + Integer.toString(status.getStatusCode()) + " " +
+                        status.getReasonPhrase());
+            }
+        } catch (final IOException ex) {
+            LOGGER.error("IO Error while purging the content for " + identifier.getIRIString() +
                     ": " + ex.getMessage());
             throw new UncheckedIOException(ex);
         }

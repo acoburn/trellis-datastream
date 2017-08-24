@@ -79,13 +79,18 @@ public class FileResolver implements BinaryService.Resolver {
     }
 
     @Override
-    public Boolean uploadSessionExists(final String identifier) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+    public void purgeContent(final String partition, final IRI identifier) {
+        getFileFromIdentifier(partition, identifier).ifPresent(File::delete);
     }
 
     @Override
     public Boolean supportsMultipartUpload() {
         return false;
+    }
+
+    @Override
+    public Boolean uploadSessionExists(final String identifier) {
+        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
     }
 
     @Override

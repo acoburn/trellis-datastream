@@ -78,6 +78,18 @@ public class FileResolverTest {
     }
 
     @Test
+    public void testFilePurge() {
+        final Resolver resolver = new FileResolver(partitions);
+        final IRI fileIRI = rdf.createIRI("file:" + randomFilename());
+        final InputStream inputStream = new ByteArrayInputStream("Some data".getBytes(UTF_8));
+        resolver.setContent(partition, fileIRI, inputStream);
+        assertTrue(resolver.exists(partition, fileIRI));
+        resolver.purgeContent(partition, fileIRI);
+        assertFalse(resolver.exists(partition, fileIRI));
+
+    }
+
+    @Test
     public void testFileContent() {
         final Resolver resolver = new FileResolver(partitions);
         assertTrue(resolver.getContent(partition, file).isPresent());

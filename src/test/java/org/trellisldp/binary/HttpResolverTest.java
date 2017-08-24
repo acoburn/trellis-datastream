@@ -33,6 +33,7 @@ import org.apache.commons.rdf.api.RDF;
 import org.apache.commons.rdf.simple.SimpleRDF;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPut;
@@ -68,6 +69,7 @@ public class HttpResolverTest {
 
     @Before
     public void setUp() throws IOException {
+        when(mockClient.execute(any(HttpDelete.class))).thenReturn(mockResponse);
         when(mockClient.execute(any(HttpPut.class))).thenReturn(mockResponse);
         when(mockResponse.getStatusLine()).thenReturn(mockStatusLine);
         when(mockStatusLine.getStatusCode()).thenReturn(201);
@@ -118,6 +120,22 @@ public class HttpResolverTest {
         resolver.setContent(partition, sslResource, inputStream);
 
         verify(mockClient).execute(any(HttpPut.class));
+    }
+
+    @Test
+    public void testMockedDelete() throws IOException {
+        final Resolver resolver = new HttpResolver(mockClient);
+        resolver.purgeContent(partition, sslResource);
+
+        verify(mockClient).execute(any(HttpDelete.class));
+    }
+
+    @Test(expected = RuntimeRepositoryException.class)
+    public void testMockedDeleteiException() throws IOException {
+        when(mockStatusLine.getStatusCode()).thenReturn(400);
+        when(mockStatusLine.getReasonPhrase()).thenReturn("BAD REQUEST");
+        final Resolver resolver = new HttpResolver(mockClient);
+        resolver.purgeContent(partition, sslResource);
     }
 
     @Test
@@ -187,6 +205,14 @@ public class HttpResolverTest {
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
 
         resolver.setContent(partition, resource, inputStream);
+    }
+
+    @Test(expected = UncheckedIOException.class)
+    public void testExceptedDelete() throws IOException {
+        when(mockClient.execute(any(HttpDelete.class))).thenThrow(new IOException("Expected Error"));
+        final Resolver resolver = new HttpResolver(mockClient);
+
+        resolver.purgeContent(partition, resource);
     }
 
     @Test(expected = UncheckedIOException.class)
