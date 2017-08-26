@@ -43,7 +43,7 @@ import org.trellisldp.spi.BinaryService.MultipartUpload;
  */
 public class FileResolver implements BinaryService.Resolver {
 
-    private static final String UNSUPPORTED_MESSAGE = "File Resolver does not support multipart uploads";
+    private static final String FILE_RESOLVER_NO_MULTIPART = "File Resolver does not support multipart uploads";
 
     private static final Logger LOGGER = getLogger(FileResolver.class);
 
@@ -90,32 +90,32 @@ public class FileResolver implements BinaryService.Resolver {
 
     @Override
     public Boolean uploadSessionExists(final String identifier) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(FILE_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public String initiateUpload(final String partition, final IRI identifier, final String mimeType) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(FILE_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public String uploadPart(final String identifier, final Integer partNumber, final InputStream content) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(FILE_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public MultipartUpload completeUpload(final String identifier, final Map<Integer, String> partDigests) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(FILE_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public void abortUpload(final String identifier) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(FILE_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public Stream<Map.Entry<Integer, String>> listParts(final String identifier) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(FILE_RESOLVER_NO_MULTIPART);
     }
 
     @Override

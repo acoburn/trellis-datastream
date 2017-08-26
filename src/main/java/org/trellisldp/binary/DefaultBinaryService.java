@@ -76,11 +76,9 @@ public class DefaultBinaryService implements BinaryService {
     public DefaultBinaryService(final IdentifierService idService, final Map<String, Properties> partitions,
             final List<BinaryService.Resolver> resolvers) {
         this.idService = idService;
-        resolvers.forEach(resolver -> {
-            resolver.getUriSchemes().forEach(scheme -> {
-                this.resolvers.put(scheme, resolver);
-            });
-        });
+        resolvers.forEach(resolver ->
+                resolver.getUriSchemes().forEach(scheme ->
+                    this.resolvers.put(scheme, resolver)));
         partitions.forEach((k, v) -> {
             final String prefix = v.getProperty("prefix");
             if (isNull(prefix)) {

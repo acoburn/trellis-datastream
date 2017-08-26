@@ -13,7 +13,7 @@
  */
 package org.trellisldp.binary;
 
-import static java.util.Collections.unmodifiableList;
+import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
@@ -23,7 +23,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,7 +48,8 @@ import org.trellisldp.spi.RuntimeRepositoryException;
  */
 public class HttpResolver implements BinaryService.Resolver {
 
-    private static final String UNSUPPORTED_MESSAGE = "HTTP Resolver does not support multipart uploads";
+    private static final String HTTP_RESOLVER_NO_MULTIPART = "HTTP Resolver does not support multipart uploads";
+    private static final String NON_NULL_IDENTIFIER = "Identifier may not be null!";
 
     private static final Logger LOGGER = getLogger(HttpResolver.class);
 
@@ -87,10 +87,7 @@ public class HttpResolver implements BinaryService.Resolver {
 
     @Override
     public List<String> getUriSchemes() {
-        return unmodifiableList(new ArrayList<String>() { {
-            add("http");
-            add("https");
-        }});
+        return asList("http", "https");
     }
 
     @Override
@@ -100,37 +97,37 @@ public class HttpResolver implements BinaryService.Resolver {
 
     @Override
     public String initiateUpload(final String partition, final IRI identifier, final String mimeType) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(HTTP_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public String uploadPart(final String identifier, final Integer partNumber, final InputStream content) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(HTTP_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public MultipartUpload completeUpload(final String identifier, final Map<Integer, String> partDigests) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(HTTP_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public void abortUpload(final String identifier) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(HTTP_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public Stream<Map.Entry<Integer, String>> listParts(final String identifier) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(HTTP_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public Boolean uploadSessionExists(final String identifier) {
-        throw new UnsupportedOperationException(UNSUPPORTED_MESSAGE);
+        throw new UnsupportedOperationException(HTTP_RESOLVER_NO_MULTIPART);
     }
 
     @Override
     public Boolean exists(final String partition, final IRI identifier) {
-        requireNonNull(identifier, "Identifier may not be null!");
+        requireNonNull(identifier, NON_NULL_IDENTIFIER);
         try {
             final HttpResponse res = httpClient.execute(new HttpHead(identifier.getIRIString()));
             return res.getStatusLine().getStatusCode() < SC_BAD_REQUEST;
@@ -142,7 +139,7 @@ public class HttpResolver implements BinaryService.Resolver {
 
     @Override
     public Optional<InputStream> getContent(final String partition, final IRI identifier) {
-        requireNonNull(identifier,  "Identifier may not be null!");
+        requireNonNull(identifier,  NON_NULL_IDENTIFIER);
         try {
             final HttpResponse res = httpClient.execute(new HttpGet(identifier.getIRIString()));
             final StatusLine status = res.getStatusLine();
@@ -159,7 +156,7 @@ public class HttpResolver implements BinaryService.Resolver {
     @Override
     public void setContent(final String partition, final IRI identifier, final InputStream stream,
             final Map<String, String> metadata) {
-        requireNonNull(identifier, "Identifier may not be null!");
+        requireNonNull(identifier, NON_NULL_IDENTIFIER);
         try {
             final HttpResponse res = httpClient.execute(new HttpPut(identifier.getIRIString()));
             final StatusLine status = res.getStatusLine();
@@ -179,7 +176,7 @@ public class HttpResolver implements BinaryService.Resolver {
 
     @Override
     public void purgeContent(final String partition, final IRI identifier) {
-        requireNonNull(identifier, "Identifier may not be null!");
+        requireNonNull(identifier, NON_NULL_IDENTIFIER);
         try {
             final HttpResponse res = httpClient.execute(new HttpDelete(identifier.getIRIString()));
             final StatusLine status = res.getStatusLine();
