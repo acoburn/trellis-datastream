@@ -126,6 +126,7 @@ public class FileResolver implements BinaryService.Resolver {
             LOGGER.debug("Setting binary content for {}", identifier.getIRIString());
             try {
                 copy(stream, path, REPLACE_EXISTING);
+                stream.close();
             } catch (final IOException ex) {
                 LOGGER.error("Error while setting content: {}", ex.getMessage());
                 throw new UncheckedIOException(ex);

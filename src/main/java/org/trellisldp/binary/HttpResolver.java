@@ -29,8 +29,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.IRI;
-import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
@@ -128,8 +128,7 @@ public class HttpResolver implements BinaryService.Resolver {
     @Override
     public Boolean exists(final String partition, final IRI identifier) {
         requireNonNull(identifier, NON_NULL_IDENTIFIER);
-        try {
-            final HttpResponse res = httpClient.execute(new HttpHead(identifier.getIRIString()));
+        try (final CloseableHttpResponse res = httpClient.execute(new HttpHead(identifier.getIRIString()))) {
             return res.getStatusLine().getStatusCode() < SC_BAD_REQUEST;
         } catch (final IOException ex) {
             LOGGER.error("Error while checking for " + identifier.getIRIString() + ": " + ex.getMessage());
@@ -141,7 +140,7 @@ public class HttpResolver implements BinaryService.Resolver {
     public Optional<InputStream> getContent(final String partition, final IRI identifier) {
         requireNonNull(identifier,  NON_NULL_IDENTIFIER);
         try {
-            final HttpResponse res = httpClient.execute(new HttpGet(identifier.getIRIString()));
+            final CloseableHttpResponse res = httpClient.execute(new HttpGet(identifier.getIRIString()));
             final StatusLine status = res.getStatusLine();
             LOGGER.debug("HTTP GET Request to {} returned {} status: {}", identifier.getIRIString(),
                     status.getStatusCode(), status.getReasonPhrase());
@@ -157,8 +156,7 @@ public class HttpResolver implements BinaryService.Resolver {
     public void setContent(final String partition, final IRI identifier, final InputStream stream,
             final Map<String, String> metadata) {
         requireNonNull(identifier, NON_NULL_IDENTIFIER);
-        try {
-            final HttpResponse res = httpClient.execute(new HttpPut(identifier.getIRIString()));
+        try (final CloseableHttpResponse res = httpClient.execute(new HttpPut(identifier.getIRIString()))) {
             final StatusLine status = res.getStatusLine();
             LOGGER.info("HTTP PUT Request to {} returned {} status: {}", identifier.getIRIString(),
                     status.getStatusCode(), status.getReasonPhrase());
@@ -177,8 +175,7 @@ public class HttpResolver implements BinaryService.Resolver {
     @Override
     public void purgeContent(final String partition, final IRI identifier) {
         requireNonNull(identifier, NON_NULL_IDENTIFIER);
-        try {
-            final HttpResponse res = httpClient.execute(new HttpDelete(identifier.getIRIString()));
+        try (final CloseableHttpResponse res = httpClient.execute(new HttpDelete(identifier.getIRIString()))) {
             final StatusLine status = res.getStatusLine();
             LOGGER.info("HTTP DELETE Request to {} returned {} status: {}", identifier.getIRIString(),
                     status.getStatusCode(), status.getReasonPhrase());
