@@ -129,7 +129,9 @@ public class DefaultBinaryService implements BinaryService {
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
         return algorithm -> {
             try {
-                return of(encodeBase64String(DigestUtils.updateDigest(algorithm, stream).digest()));
+                final String digest = encodeBase64String(DigestUtils.updateDigest(algorithm, stream).digest());
+                stream.close();
+                return of(digest);
             } catch (final IOException ex) {
                 LOGGER.error("Error computing digest: {}", ex.getMessage());
             }
