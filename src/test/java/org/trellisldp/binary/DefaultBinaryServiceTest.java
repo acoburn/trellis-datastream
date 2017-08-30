@@ -16,9 +16,9 @@ package org.trellisldp.binary;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
-import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
@@ -145,8 +145,8 @@ public class DefaultBinaryServiceTest {
 
         assertEquals(of(resolver), service.getResolver(fileIRI));
         assertEquals(of(resolver), service.getResolverForPartition("repository"));
-        assertEquals(empty(), service.getResolver(rdf.createIRI("test:ex")));
-        assertEquals(empty(), service.getResolverForPartition("blah"));
+        assertFalse(service.getResolver(rdf.createIRI("test:ex")).isPresent());
+        assertFalse(service.getResolverForPartition("blah").isPresent());
     }
 
     @Test
@@ -163,6 +163,6 @@ public class DefaultBinaryServiceTest {
         assertEquals(of("W4L4v03yv7DmbMqnMG/QJA=="), service.digest("MD5", new ByteArrayInputStream(data)));
         assertEquals(of("jXJFPxAHmvPfx/z8QQmx7VXhg58="), service.digest("SHA-1",
                     new ByteArrayInputStream(data)));
-        assertEquals(empty(), service.digest("MD5", mockInputStream));
+        assertFalse(service.digest("MD5", mockInputStream).isPresent());
     }
 }
