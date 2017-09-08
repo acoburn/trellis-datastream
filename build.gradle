@@ -32,7 +32,6 @@ ext {
     trellisSpiVersion = '0.1.0-SNAPSHOT'
     commonsRdfVersion = '0.3.0-incubating'
     commonsCodecVersion = '1.10'
-    httpClientVersion = '4.5.3'
     slf4jVersion = '1.7.25'
 
     /* Testing */
@@ -50,7 +49,6 @@ configurations {
 }
 
 dependencies {
-    api group: 'org.apache.httpcomponents', name: 'httpclient', version: httpClientVersion
     api group: 'org.trellisldp', name: 'trellis-spi', version: trellisSpiVersion
 
     implementation group: 'commons-codec', name: 'commons-codec', version: commonsCodecVersion
