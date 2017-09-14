@@ -122,10 +122,12 @@ public class FileResolver implements BinaryService.Resolver {
     public void setContent(final String partition, final IRI identifier, final InputStream stream,
             final Map<String, String> metadata) {
         requireNonNull(stream, "InputStream may not be null!");
-        getFileFromIdentifier(partition, identifier).map(File::toPath).ifPresent(path -> {
+        getFileFromIdentifier(partition, identifier).ifPresent(file -> {
             LOGGER.debug("Setting binary content for {}", identifier.getIRIString());
             try {
-                copy(stream, path, REPLACE_EXISTING);
+                final File parent = file.getParentFile();
+                parent.mkdirs();
+                copy(stream, file.toPath(), REPLACE_EXISTING);
                 stream.close();
             } catch (final IOException ex) {
                 LOGGER.error("Error while setting content: {}", ex.getMessage());
