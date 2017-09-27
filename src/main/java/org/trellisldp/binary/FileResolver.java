@@ -123,7 +123,7 @@ public class FileResolver implements BinaryService.Resolver {
             final Map<String, String> metadata) {
         requireNonNull(stream, "InputStream may not be null!");
         getFileFromIdentifier(partition, identifier).ifPresent(file -> {
-            LOGGER.debug("Setting binary content for {}", identifier.getIRIString());
+            LOGGER.debug("Setting binary content for {} at {}", identifier.getIRIString(), file.getAbsolutePath());
             try {
                 final File parent = file.getParentFile();
                 parent.mkdirs();
