@@ -46,9 +46,9 @@ import java.util.function.Supplier;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
-import org.trellisldp.spi.BinaryService;
-import org.trellisldp.spi.IdentifierService;
-import org.trellisldp.spi.RuntimeRepositoryException;
+import org.trellisldp.api.BinaryService;
+import org.trellisldp.api.IdentifierService;
+import org.trellisldp.api.RuntimeRepositoryException;
 
 /**
  * @author acoburn

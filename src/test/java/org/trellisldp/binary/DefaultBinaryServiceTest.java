@@ -43,9 +43,9 @@ import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.RDF;
 import org.apache.commons.rdf.simple.SimpleRDF;
 
-import org.trellisldp.spi.BinaryService;
-import org.trellisldp.spi.IdentifierService;
-import org.trellisldp.spi.RuntimeRepositoryException;
+import org.trellisldp.api.BinaryService;
+import org.trellisldp.api.IdentifierService;
+import org.trellisldp.api.RuntimeRepositoryException;
 
 /**
  * @author acoburn

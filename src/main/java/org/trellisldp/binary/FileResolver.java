@@ -35,8 +35,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.rdf.api.IRI;
 import org.slf4j.Logger;
-import org.trellisldp.spi.BinaryService;
-import org.trellisldp.spi.BinaryService.MultipartUpload;
+import org.trellisldp.api.BinaryService;
+import org.trellisldp.api.BinaryService.MultipartUpload;
 
 /**
  * @author acoburn
