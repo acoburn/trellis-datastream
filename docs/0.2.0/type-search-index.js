@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"org.trellisldp.binary","l":"DefaultBinaryService"},{"p":"org.trellisldp.binary","l":"FileResolver"}]
