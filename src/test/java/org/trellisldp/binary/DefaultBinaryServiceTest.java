@@ -17,10 +17,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static java.util.Optional.of;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -33,11 +35,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.RDF;
@@ -50,7 +52,7 @@ import org.trellisldp.api.RuntimeRepositoryException;
 /**
  * @author acoburn
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitPlatform.class)
 public class DefaultBinaryServiceTest {
 
     private static final RDF rdf = new SimpleRDF();
@@ -64,8 +66,9 @@ public class DefaultBinaryServiceTest {
     @Mock
     private Supplier<String> mockSupplier;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
+        initMocks(this);
         when(mockIdService.getSupplier(anyString(), anyInt(), anyInt())).thenReturn(mockSupplier);
         when(mockInputStream.read(any(), anyInt(), anyInt())).thenThrow(new IOException("Expected Error"));
     }
@@ -83,28 +86,28 @@ public class DefaultBinaryServiceTest {
         assertEquals(mockSupplier, service.getIdentifierSupplier("repository"));
     }
 
-    @Test(expected = RuntimeRepositoryException.class)
+    @Test
     public void testServiceNoPrefix() {
         final Properties props = new Properties();
         final Map<String, Properties> config = new HashMap<>();
         config.put("repository", props);
 
-        final BinaryService service = new DefaultBinaryService(mockIdService, config,
-                asList(new FileResolver(emptyMap())));
+        assertThrows(RuntimeRepositoryException.class, () -> new DefaultBinaryService(mockIdService, config,
+                asList(new FileResolver(emptyMap()))));
     }
 
-    @Test(expected = RuntimeRepositoryException.class)
+    @Test
     public void testServiceNoMatch() {
         final Properties props = new Properties();
         props.setProperty("prefix", "foo:");
         final Map<String, Properties> config = new HashMap<>();
         config.put("repository", props);
 
-        final BinaryService service = new DefaultBinaryService(mockIdService, config,
-                asList(new FileResolver(emptyMap())));
+        assertThrows(RuntimeRepositoryException.class, () -> new DefaultBinaryService(mockIdService, config,
+                asList(new FileResolver(emptyMap()))));
     }
 
-    @Test(expected = RuntimeRepositoryException.class)
+    @Test
     public void testUnknownPartition() {
         final Properties props = new Properties();
         props.setProperty("prefix", "file:");
@@ -114,7 +117,7 @@ public class DefaultBinaryServiceTest {
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
                 asList(new FileResolver(emptyMap())));
 
-        service.getIdentifierSupplier("nonexistent");
+        assertThrows(RuntimeRepositoryException.class, () -> service.getIdentifierSupplier("nonexistent"));
     }
 
     @Test

@@ -15,11 +15,13 @@ package org.trellisldp.binary;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.emptyMap;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -35,17 +37,17 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.rdf.api.IRI;
 import org.apache.commons.rdf.api.RDF;
 import org.apache.commons.rdf.simple.SimpleRDF;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.runner.JUnitPlatform;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.trellisldp.api.BinaryService.Resolver;
 
 /**
  * @author acoburn
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(JUnitPlatform.class)
 public class FileResolverTest {
 
     private final static String testDoc = "test.txt";
@@ -64,8 +66,9 @@ public class FileResolverTest {
     @Mock
     private InputStream mockInputStream;
 
-    @Before
+    @BeforeEach
     public void setUp() {
+        initMocks(this);
         partitions.clear();
         partitions.put(partition, directory);
     }
@@ -107,19 +110,19 @@ public class FileResolverTest {
         assertEquals(contents, resolver.getContent(partition, fileIRI).map(this::uncheckedToString).get());
     }
 
-    @Test(expected = UncheckedIOException.class)
+    @Test
     public void testGetFileContentError() throws IOException {
         final Resolver resolver = new FileResolver(partitions);
         final IRI fileIRI = rdf.createIRI("file:" + randomFilename());
-        resolver.getContent(partition, fileIRI);
+        assertThrows(UncheckedIOException.class, () -> resolver.getContent(partition, fileIRI));
     }
 
-    @Test(expected = UncheckedIOException.class)
+    @Test
     public void testSetFileContentError() throws IOException {
         when(mockInputStream.read(any(byte[].class))).thenThrow(new IOException("Expected error"));
         final Resolver resolver = new FileResolver(partitions);
         final IRI fileIRI = rdf.createIRI("file:" + randomFilename());
-        resolver.setContent(partition, fileIRI, mockInputStream);
+        assertThrows(UncheckedIOException.class, () -> resolver.setContent(partition, fileIRI, mockInputStream));
     }
 
     @Test
@@ -135,42 +138,42 @@ public class FileResolverTest {
         assertFalse(resolver.supportsMultipartUpload());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testMultipartAbort() {
         final Resolver resolver = new FileResolver(partitions);
-        resolver.abortUpload("test-identifier");
+        assertThrows(UnsupportedOperationException.class, () -> resolver.abortUpload("test-identifier"));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testMultipartComplete() {
         final Resolver resolver = new FileResolver(partitions);
-        resolver.completeUpload("test-identifier", emptyMap());
+        assertThrows(UnsupportedOperationException.class, () -> resolver.completeUpload("test-identifier", emptyMap()));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testListParts() {
         final Resolver resolver = new FileResolver(partitions);
-        resolver.listParts("foo");
+        assertThrows(UnsupportedOperationException.class, () -> resolver.listParts("foo"));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testMultipartUpload() {
         final String contents = "A new resource";
         final InputStream inputStream = new ByteArrayInputStream(contents.getBytes(UTF_8));
         final Resolver resolver = new FileResolver(partitions);
-        resolver.uploadPart("test-identifier", 1, inputStream);
+        assertThrows(UnsupportedOperationException.class, () -> resolver.uploadPart("test-identifier", 1, inputStream));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testMultipartInitiate() {
         final Resolver resolver = new FileResolver(partitions);
-        resolver.initiateUpload(partition, file, "text/plain");
+        assertThrows(UnsupportedOperationException.class, () -> resolver.initiateUpload(partition, file, "text/plain"));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testMultipartIdentifierExists() {
         final Resolver resolver = new FileResolver(partitions);
-        resolver.uploadSessionExists("test-identifier");
+        assertThrows(UnsupportedOperationException.class, () -> resolver.uploadSessionExists("test-identifier"));
     }
 
     private String uncheckedToString(final InputStream is) {
