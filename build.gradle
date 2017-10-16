@@ -35,7 +35,7 @@ ext {
     slf4jVersion = '1.7.25'
 
     /* Testing */
-    junitVersion = '4.12'
+    junitVersion = '4.12.1'
     mockitoVersion = '2.11.0'
     logbackVersion = '1.2.3'
     commonsIoVersion = '2.5'
@@ -58,7 +58,7 @@ dependencies {
 
     testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: logbackVersion
     testImplementation group: 'commons-io', name: 'commons-io', version: commonsIoVersion
-    testImplementation group: 'junit', name: 'junit', version: junitVersion
+    testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: junitVersion
     testImplementation group: 'org.apache.commons', name: 'commons-rdf-simple', version: commonsRdfVersion
     testImplementation group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
 
