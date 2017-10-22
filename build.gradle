@@ -31,7 +31,7 @@ ext {
     /* Dependencies */
     trellisApiVersion = '0.3.0'
     commonsRdfVersion = '0.3.0-incubating'
-    commonsCodecVersion = '1.10'
+    commonsCodecVersion = '1.11'
     slf4jVersion = '1.7.25'
 
     /* Testing */
