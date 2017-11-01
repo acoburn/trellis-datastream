@@ -131,6 +131,7 @@ public class DefaultBinaryServiceTest {
                 asList(new FileResolver(emptyMap())));
 
         assertTrue(service.supportedAlgorithms().contains("MD5"));
+        assertTrue(service.supportedAlgorithms().contains("SHA"));
         assertTrue(service.supportedAlgorithms().contains("SHA-1"));
         assertTrue(service.supportedAlgorithms().contains("SHA-256"));
     }
@@ -164,8 +165,8 @@ public class DefaultBinaryServiceTest {
         final BinaryService service = new DefaultBinaryService(mockIdService, config,
                 asList(new FileResolver(emptyMap())));
         assertEquals(of("W4L4v03yv7DmbMqnMG/QJA=="), service.digest("MD5", new ByteArrayInputStream(data)));
-        assertEquals(of("jXJFPxAHmvPfx/z8QQmx7VXhg58="), service.digest("SHA-1",
-                    new ByteArrayInputStream(data)));
+        assertEquals(of("jXJFPxAHmvPfx/z8QQmx7VXhg58="), service.digest("SHA", new ByteArrayInputStream(data)));
+        assertEquals(of("jXJFPxAHmvPfx/z8QQmx7VXhg58="), service.digest("SHA-1", new ByteArrayInputStream(data)));
         assertFalse(service.digest("MD5", mockInputStream).isPresent());
     }
 }

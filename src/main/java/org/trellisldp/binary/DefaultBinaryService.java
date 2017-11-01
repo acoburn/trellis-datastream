@@ -58,9 +58,11 @@ public class DefaultBinaryService implements BinaryService {
     private static final String DEFAULT_LEVELS = "0";
     private static final String DEFAULT_LENGTH = "2";
 
+    private static final String SHA = "SHA";
+
     private static final Logger LOGGER = getLogger(DefaultBinaryService.class);
 
-    private static final Set<String> algorithms = asList(MD5, MD2, SHA_1, SHA_256, SHA_384, SHA_512).stream()
+    private static final Set<String> algorithms = asList(MD5, MD2, SHA, SHA_1, SHA_256, SHA_384, SHA_512).stream()
         .collect(toSet());
 
     private final Map<String, BinaryService.Resolver> resolvers = new HashMap<>();
@@ -109,6 +111,9 @@ public class DefaultBinaryService implements BinaryService {
 
     @Override
     public Optional<String> digest(final String algorithm, final InputStream stream) {
+        if (SHA.equals(algorithm)) {
+            return of(SHA_1).map(DigestUtils::getDigest).flatMap(digest(stream));
+        }
         return ofNullable(algorithm).map(DigestUtils::getDigest).flatMap(digest(stream));
     }
 
