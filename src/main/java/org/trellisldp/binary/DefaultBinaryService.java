@@ -15,12 +15,12 @@ package org.trellisldp.binary;
 
 import static java.lang.Integer.parseInt;
 import static java.util.Arrays.asList;
+import static java.util.Base64.getEncoder;
 import static java.util.Objects.isNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD2;
 import static org.apache.commons.codec.digest.MessageDigestAlgorithms.MD5;
 import static org.apache.commons.codec.digest.MessageDigestAlgorithms.SHA_1;
@@ -134,7 +134,7 @@ public class DefaultBinaryService implements BinaryService {
     private Function<MessageDigest, Optional<String>> digest(final InputStream stream) {
         return algorithm -> {
             try {
-                final String digest = encodeBase64String(DigestUtils.updateDigest(algorithm, stream).digest());
+                final String digest = getEncoder().encodeToString(DigestUtils.updateDigest(algorithm, stream).digest());
                 stream.close();
                 return of(digest);
             } catch (final IOException ex) {
